@@ -1,0 +1,1897 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Underwater Soundings · Aureos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#004578; --blue:#0072BC; --cyan:#00A3E2; --teal:#00A99D; --green:#00A658; --lime:#98C63D;
+  --spectrum:linear-gradient(90deg,#004578 0%,#0072BC 20%,#00A3E2 38%,#00A99D 56%,#00A658 74%,#98C63D 100%);
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface2:#EEF3F7; --ink:#132130; --muted:#5A6B7C; --line:#D3DDE6; color-scheme:light;
+  --accent:#004578; --accent-ink:#FFFFFF; --accent-soft:#E3EEF7; --prev:#F5F8FB; --danger:#B42318;
+  --head:'Outfit', 'Segoe UI', system-ui, sans-serif; --body:'Barlow', 'Segoe UI', system-ui, sans-serif;
+  --navh:64px;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html,body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; line-height:1.45; }
+body{ min-height:100vh; }
+img,svg{ max-width:100%; }
+button,input,select{ font:inherit; color:inherit; }
+h1,h2,h3{ font-family:var(--head); font-weight:600; margin:0; letter-spacing:-0.01em; }
+h1{ font-size:1.75rem; line-height:1.15; }
+h2{ font-size:1.15rem; }
+h3{ font-size:1rem; }
+p{ margin:0; }
+.muted{ color:var(--muted); }
+:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+
+/* top bar */
+.top{ position:sticky; top:env(safe-area-inset-top,0px); z-index:30; background:var(--surface); }
+.top-in{ display:flex; align-items:center; gap:18px; padding:12px 24px; max-width:1440px; margin:0 auto; }
+.brand{ display:flex; align-items:center; gap:14px; min-width:0; flex:1; }
+.brand img{ height:24px; width:auto; display:block; }
+.brand-text{ border-left:1px solid var(--line); padding-left:14px; min-width:0; }
+.brand-text strong{ font-family:var(--head); font-weight:600; font-size:1.05rem; display:block; line-height:1.2; }
+.brand-text span{ color:var(--muted); font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.spectrum{ height:4px; background:var(--spectrum); }
+.actions{ display:flex; gap:6px; align-items:center; }
+.btn{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--surface); padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:500; font-size:.95rem; white-space:nowrap; min-height:40px; }
+.btn:hover{ background:var(--surface2); }
+.btn svg{ width:18px; height:18px; flex:none; }
+.btn.primary{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.btn.primary:hover{ filter:brightness(1.08); }
+.btn.ghost{ border-color:transparent; background:transparent; }
+.btn.ghost:hover{ background:var(--surface2); }
+.btn.danger{ color:var(--danger); }
+.btn.sm{ padding:5px 10px; min-height:32px; font-size:.88rem; }
+.sep{ width:1px; height:26px; background:var(--line); margin:0 4px; }
+.menu-btn{ display:none; }
+
+/* tabs */
+.tabs{ background:var(--surface); border-bottom:1px solid var(--line); }
+.tabs-in{ display:flex; gap:4px; max-width:1440px; margin:0 auto; padding:0 16px; overflow-x:auto; }
+.tab{ position:relative; border:0; background:none; padding:14px 14px 13px; cursor:pointer; font-family:var(--head); font-weight:500; font-size:.98rem; color:var(--muted); display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.tab svg{ width:19px; height:19px; }
+.tab:hover{ color:var(--ink); }
+.tab[aria-current="page"]{ color:var(--ink); }
+.tab[aria-current="page"]::after{ content:""; position:absolute; left:10px; right:10px; bottom:-1px; height:3px; border-radius:3px 3px 0 0; background:var(--spectrum); }
+
+main{ max-width:1440px; margin:0 auto; padding:28px 24px 64px; }
+.page-head{ display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom:22px; }
+.page-head p{ color:var(--muted); max-width:62ch; margin-top:6px; }
+
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; }
+.card > h2{ margin-bottom:14px; }
+.card-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin-bottom:12px; flex-wrap:wrap; }
+.grid2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.span2{ grid-column:1 / -1; }
+
+.fld{ display:flex; flex-direction:column; gap:5px; margin-bottom:14px; }
+.fld > span{ font-size:.86rem; color:var(--muted); font-weight:500; }
+.fld small{ color:var(--muted); font-size:.82rem; }
+.fld input,.fld select, .inp{ border:1px solid var(--line); background:var(--surface); border-radius:7px; padding:9px 11px; min-height:42px; width:100%; }
+.fld input:focus,.fld select:focus,.inp:focus{ border-color:var(--cyan); outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--cyan) 22%,transparent); }
+.row3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.row2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+
+.seg{ display:inline-flex; border:1px solid var(--line); border-radius:9px; padding:3px; background:var(--surface2); gap:2px; flex-wrap:wrap; }
+.seg button{ border:0; background:none; border-radius:7px; padding:7px 13px; cursor:pointer; font-weight:500; font-size:.92rem; color:var(--muted); }
+.seg button[aria-pressed="true"]{ background:var(--surface); color:var(--ink); box-shadow:0 1px 2px rgba(0,30,60,.14); }
+
+.chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.chip{ border:1px solid var(--line); background:var(--surface); border-radius:999px; padding:7px 15px; cursor:pointer; font-weight:500; font-size:.93rem; display:inline-flex; gap:8px; align-items:center; }
+.chip[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.chip .cnt{ font-size:.78rem; opacity:.75; }
+.chip.add{ border-style:dashed; color:var(--muted); }
+
+/* data tables */
+.tbl-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:9px; }
+table.data{ border-collapse:collapse; width:100%; font-variant-numeric:tabular-nums; font-size:.95rem; }
+table.data th{ text-align:left; font-weight:600; font-size:.8rem; color:var(--muted); padding:8px 8px 7px; background:var(--surface2); border-bottom:1px solid var(--line); vertical-align:bottom; line-height:1.25; white-space:nowrap; }
+table.data th small{ display:block; font-weight:500; color:var(--muted); font-size:.75rem; }
+table.data td{ border-bottom:1px solid var(--line); padding:0; height:40px; }
+table.data tr:last-child td{ border-bottom:0; }
+table.data td input{ width:100%; min-width:58px; border:0; background:transparent; padding:9px 8px; height:40px; text-align:right; }
+table.data td input.lab{ text-align:left; font-weight:500; min-width:92px; }
+table.data td input:focus{ outline:2px solid var(--cyan); outline-offset:-2px; background:var(--surface); }
+table.data td.calc{ text-align:right; padding:0 10px; font-weight:600; color:var(--accent); background:var(--accent-soft); min-width:64px; }
+table.data td.pv{ background:var(--prev); }
+table.data td.pv input{ color:var(--muted); }
+table.data td.x{ width:38px; text-align:center; }
+.icon{ border:0; background:none; cursor:pointer; color:var(--muted); width:34px; height:34px; border-radius:7px; display:inline-grid; place-items:center; }
+.icon:hover{ background:var(--surface2); color:var(--danger); }
+.icon svg{ width:16px; height:16px; }
+.tbl-actions{ display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; align-items:center; }
+.legend-note{ display:flex; gap:14px; flex-wrap:wrap; font-size:.82rem; color:var(--muted); margin-top:10px; }
+.legend-note i{ display:inline-block; width:12px; height:12px; border-radius:3px; vertical-align:-2px; margin-right:5px; }
+
+.paper{ background:#fff; color:#000; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.paper svg{ display:block; width:100%; height:auto; }
+.xs-layout > *, .grid2 > *, .rad-grid > *, .struct-sketch > *{ min-width:0; }
+.xs-layout{ display:grid; grid-template-columns:minmax(360px,5fr) 7fr; gap:18px; align-items:start; }
+.xs-layout .paper{ position:sticky; top:150px; }
+
+.el-bar{ display:grid; grid-template-columns:2fr 1.2fr 1.2fr auto; gap:12px; align-items:end; }
+.el-bar .fld{ margin:0; }
+.stepper{ display:flex; align-items:center; gap:4px; border:1px solid var(--line); border-radius:8px; padding:3px; background:var(--surface); min-height:42px; }
+.stepper b{ min-width:34px; text-align:center; font-variant-numeric:tabular-nums; }
+.stepper button{ width:34px; height:34px; border:0; border-radius:6px; background:var(--surface2); cursor:pointer; font-size:1.1rem; font-weight:600; }
+.rad-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; margin-top:18px; }
+.radial h3{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.radial .paper{ margin-top:12px; }
+.radial table.data td input{ min-width:48px; }
+
+.drop{ border:2px dashed var(--line); border-radius:12px; padding:26px 18px; text-align:center; cursor:pointer; color:var(--muted); transition:border-color .15s, background .15s; }
+.drop:hover,.drop.over{ border-color:var(--cyan); background:color-mix(in srgb,var(--cyan) 7%,transparent); color:var(--ink); }
+.drop strong{ color:var(--ink); display:block; font-family:var(--head); font-weight:600; margin-bottom:4px; }
+.flow-list{ margin:14px 0 0; padding:0; list-style:none; display:grid; gap:8px; font-size:.92rem; }
+.flow-list li{ display:grid; grid-template-columns:110px 18px 1fr; gap:8px; align-items:center; }
+.flow-list b{ font-weight:600; }
+.flow-list .arr{ color:var(--teal); }
+
+.wl{ display:flex; align-items:baseline; gap:10px; padding:14px 16px; border-radius:10px; background:var(--accent-soft); margin-top:4px; }
+.wl b{ font-family:var(--head); font-size:1.6rem; font-weight:600; color:var(--accent); font-variant-numeric:tabular-nums; }
+table.mini{ border-collapse:collapse; width:100%; }
+table.mini th{ text-align:left; font-size:.8rem; color:var(--muted); font-weight:600; padding:0 6px 6px; }
+table.mini td{ padding:4px 6px; }
+table.mini td:first-child{ font-weight:500; white-space:nowrap; }
+table.mini td.wlv{ text-align:right; font-weight:600; font-variant-numeric:tabular-nums; color:var(--accent); }
+
+.lib{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+.lib-item{ display:flex; flex-direction:column; gap:10px; }
+.lib-item .paper{ aspect-ratio:4/3.4; display:grid; place-items:center; padding:8px; }
+.lib-item .paper svg{ max-height:100%; width:auto; height:100%; }
+.lib-item p{ font-size:.88rem; color:var(--muted); }
+.lib-item .lib-foot{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:auto; }
+.struct-sketch{ display:grid; grid-template-columns:3fr 2fr; gap:20px; align-items:start; }
+.struct-sketch .paper{ padding:12px; }
+.struct-sketch .paper svg{ max-height:560px; }
+
+.report-pages{ display:grid; gap:22px; justify-items:center; }
+.sheet{ background:#fff; box-shadow:0 1px 3px rgba(0,25,50,.18), 0 8px 24px rgba(0,25,50,.08); width:100%; }
+.sheet.l{ max-width:1123px; } .sheet.p{ max-width:794px; }
+.sheet svg{ display:block; width:100%; height:auto; }
+.page-label{ font-size:.82rem; color:var(--muted); justify-self:start; margin-bottom:-14px; }
+
+.note-warn{ border-color:#E8B04A; background:color-mix(in srgb,#E8B04A 12%,var(--surface)); margin-bottom:18px; padding:14px 18px; }
+.note-warn[hidden]{ display:none; }
+.linkbtn{ border:0; background:none; padding:0; color:var(--accent); text-decoration:underline; cursor:pointer; font-weight:600; }
+.headline{ font-size:1.05rem; margin-bottom:16px; max-width:80ch; }
+.stats{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.stat{ border:1px solid var(--line); border-radius:10px; padding:14px 16px; display:flex; flex-direction:column; gap:2px; min-width:0; }
+.stat span{ font-size:.82rem; color:var(--muted); font-weight:500; }
+.stat b{ font-family:var(--head); font-size:1.65rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--accent); line-height:1.2; }
+.stat small{ color:var(--muted); font-size:.85rem; line-height:1.3; }
+.stat.flag{ border-color:#E8B04A; background:#FFF8EA; }
+.stat.flag b{ color:#9A5B00; }
+.check{ border-radius:10px; padding:12px 14px; margin-bottom:10px; border:1px solid; }
+.check b{ display:block; font-family:var(--head); font-weight:600; margin-bottom:3px; }
+.check p{ font-size:.93rem; }
+.check.ok{ background:#ECF8F0; border-color:#9FD6B2; } .check.ok b{ color:#0B6B33; }
+.check.warn{ background:#FFF8EA; border-color:#E8B04A; } .check.warn b{ color:#8A5300; }
+.check.high{ background:#FDEEEC; border-color:#F0A69C; } .check.high b{ color:#A1261A; }
+table.data.list td{ padding:8px 10px; height:auto; }
+table.data.list th.n, table.data.list td.n{ text-align:right; font-variant-numeric:tabular-nums; }
+table.data.list td.d{ font-weight:600; } td.d.neg{ color:#A1261A; } td.d.pos{ color:#0B6B33; }
+table.data.list .linkbtn{ font-weight:500; text-align:left; }
+.tag{ display:inline-block; font-size:.75rem; font-weight:600; padding:2px 8px; border-radius:999px; white-space:nowrap; }
+.tag.warn{ background:#FFF0CC; color:#8A5300; } .tag.high{ background:#FBD9D4; color:#A1261A; }
+textarea.stmt{ resize:vertical; font:inherit; line-height:1.45; min-height:96px; }
+.empty{ text-align:center; padding:40px 20px; color:var(--muted); }
+
+/* toast + sheet */
+.toast{ position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translate(-50%,20px); opacity:0; pointer-events:none; background:#0D2233; color:#fff; padding:11px 18px; border-radius:10px; font-size:.94rem; z-index:80; transition:opacity .2s, transform .2s; max-width:min(92vw,560px); box-shadow:0 8px 24px rgba(0,0,0,.25); }
+.toast.on{ opacity:1; transform:translate(-50%,0); }
+.toast.err{ background:#7A1B12; }
+.scrim{ position:fixed; inset:0; background:rgba(5,20,32,.45); z-index:60; display:none; }
+.scrim.on{ display:block; }
+.msheet{ position:fixed; left:0; right:0; bottom:0; z-index:70; background:var(--surface); border-radius:16px 16px 0 0; padding:10px 16px calc(18px + env(safe-area-inset-bottom,0px)); transform:translateY(105%); transition:transform .22s ease, visibility .22s; visibility:hidden; }
+.msheet.on{ transform:none; visibility:visible; }
+.msheet .grab{ width:40px; height:4px; border-radius:4px; background:var(--line); margin:4px auto 12px; }
+.msheet button{ display:flex; width:100%; align-items:center; gap:14px; border:0; background:none; padding:13px 8px; font-size:1rem; font-weight:500; border-radius:10px; cursor:pointer; text-align:left; }
+.msheet button:hover{ background:var(--surface2); }
+.msheet button svg{ width:22px; height:22px; color:var(--accent); }
+.msheet button small{ display:block; color:var(--muted); font-weight:400; font-size:.84rem; }
+.confirm{ position:fixed; inset:0; z-index:85; display:none; place-items:center; background:rgba(5,20,32,.45); padding:20px; }
+.confirm.on{ display:grid; }
+.cf-box{ background:var(--surface); border-radius:14px; padding:22px; max-width:420px; width:100%; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+.cf-box p{ color:var(--muted); margin:8px 0 20px; }
+.cf-actions{ display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; }
+.btn.danger-fill{ background:#B42318; border-color:#B42318; color:#fff; }
+.busy{ position:fixed; inset:0; z-index:90; display:none; place-items:center; background:rgba(5,20,32,.35); }
+.busy.on{ display:grid; }
+.busy div{ background:var(--surface); padding:20px 26px; border-radius:12px; display:flex; gap:14px; align-items:center; font-weight:500; }
+.spin{ width:22px; height:22px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--cyan); animation:sp 0.8s linear infinite; }
+@keyframes sp{ to{ transform:rotate(360deg);} }
+@media (prefers-reduced-motion: reduce){ .spin{ animation-duration:2.4s; } .toast,.msheet{ transition:none; } }
+
+@media (max-width:1100px){
+  .xs-layout{ grid-template-columns:1fr; }
+  .xs-layout .paper{ position:static; }
+  .struct-sketch{ grid-template-columns:1fr; }
+}
+@media (max-width:1000px){ .stats{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:860px){
+  .actions .lbl{ display:none; }
+  .el-bar{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:760px){
+  .top-in{ padding:10px 14px; gap:10px; }
+  .actions{ display:none; }
+  .menu-btn{ display:inline-flex; }
+  .brand img{ height:20px; }
+  .brand-text{ padding-left:10px; }
+  .brand-text strong{ font-size:.95rem; }
+  .tabs{ position:fixed; left:0; right:0; bottom:0; z-index:40; border-top:1px solid var(--line); border-bottom:0; padding-bottom:env(safe-area-inset-bottom,0px); }
+  .tabs-in{ padding:0; gap:0; justify-content:space-around; overflow:visible; }
+  .tab{ flex-direction:column; gap:3px; font-size:.72rem; padding:9px 4px 8px; flex:1; }
+  .tab svg{ width:22px; height:22px; }
+  .tab[aria-current="page"]{ color:var(--accent); }
+  .tab[aria-current="page"]::after{ top:0; bottom:auto; left:22%; right:22%; border-radius:0 0 3px 3px; }
+  main{ padding:20px 14px calc(var(--navh) + 40px + env(safe-area-inset-bottom,0px)); }
+  h1{ font-size:1.4rem; }
+  .grid2{ grid-template-columns:1fr; }
+  .card{ padding:16px; border-radius:10px; }
+  .row3{ grid-template-columns:1fr; gap:0; }
+  .el-bar{ grid-template-columns:1fr; }
+  .rad-grid{ grid-template-columns:1fr; }
+  .chips{ flex-wrap:nowrap; overflow-x:auto; margin-left:-14px; margin-right:-14px; padding:0 14px 4px; }
+  .chip{ flex:none; }
+  .toast{ bottom:calc(var(--navh) + 18px + env(safe-area-inset-bottom,0px)); }
+  .flow-list li{ grid-template-columns:96px 16px 1fr; }
+  .brand-text strong{ white-space:nowrap; }
+  table.data{ font-size:.92rem; }
+  table.data th{ padding:7px 5px; font-size:.74rem; white-space:normal; }
+  table.data td input{ min-width:44px; padding:9px 5px; }
+  table.data td input.lab{ min-width:72px; }
+  table.data td.calc{ min-width:48px; padding:0 6px; }
+  table.data td.x{ width:30px; }
+  .icon{ width:28px; }
+  .hide-sm{ display:none; }
+  .stats{ grid-template-columns:1fr; }
+  .tab{ font-size:.66rem; }
+  table.mini.stack thead{ display:none; }
+  table.mini.stack tr{ display:grid; grid-template-columns:1fr 1fr; gap:6px 10px; padding:10px 0; border-bottom:1px solid var(--line); }
+  table.mini.stack td{ padding:0; }
+  table.mini.stack td:first-child{ grid-column:1 / -1; font-family:var(--head); font-weight:600; }
+  table.mini.stack td[data-l]::before{ content:attr(data-l); display:block; font-size:.78rem; color:var(--muted); margin-bottom:3px; }
+  table.mini.stack td.wlv{ grid-column:1 / -1; text-align:left; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <img class="logo-b" alt="Aureos" src="data:image/png;base64,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">
+      <div class="brand-text"><strong>Underwater soundings</strong><span id="hdrStruct">New exam</span></div>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" data-act="open" title="Open a saved exam (.json or .xlsx)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1"/><path d="M3 7v11a2 2 0 0 0 2 2h13l3-8H7l-3 8"/></svg><span class="lbl">Open</span></button>
+      <button class="btn ghost" data-act="save" title="Save this exam as a .json file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v6h8V3"/><path d="M7 21v-7h10v7"/></svg><span class="lbl">Save</span></button>
+      <button class="btn ghost" data-act="import-prev" title="Import last exam (PDF report, .json or .xlsx) into the Previous and Penultimate columns"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span class="lbl">Import previous</span></button>
+      <span class="sep"></span>
+      <button class="btn" data-act="export-xlsx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg><span class="lbl">Excel</span></button>
+      <button class="btn primary" data-act="export-pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 15h6M9 18h4"/></svg><span class="lbl">PDF report</span></button>
+    </div>
+    <button class="btn menu-btn" data-act="menu" aria-label="File and export options"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </div>
+  <div class="spectrum"></div>
+</header>
+<nav class="tabs" aria-label="Sections">
+  <div class="tabs-in" id="tabs"></div>
+</nav>
+<main id="main"></main>
+
+<div class="scrim" id="scrim" data-act="close-menu"></div>
+<div class="msheet" id="msheet" role="dialog" aria-label="File and export">
+  <div class="grab"></div>
+  <button data-act="open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1"/><path d="M3 7v11a2 2 0 0 0 2 2h13l3-8H7l-3 8"/></svg><span>Open<small>A saved .json or .xlsx exam</small></span></button>
+  <button data-act="save"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v6h8V3"/><path d="M7 21v-7h10v7"/></svg><span>Save<small>Download this exam as .json</small></span></button>
+  <button data-act="import-prev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span>Import previous<small>Last exam's PDF report, .json or .xlsx</small></span></button>
+  <button data-act="export-xlsx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg><span>Export Excel<small>Tables, graphs and sketch</small></span></button>
+  <button data-act="export-pdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M9 15h6M9 18h4"/></svg><span>Export PDF report<small>Appendix E pages</small></span></button>
+</div>
+<div class="confirm" id="confirm" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle" aria-describedby="cfBody">
+  <div class="cf-box"><h2 id="cfTitle"></h2><p id="cfBody"></p><div class="cf-actions"><button class="btn" id="cfCancel">Cancel</button><button class="btn primary danger-fill" id="cfOk">Confirm</button></div></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="busy" id="busy"><div><span class="spin"></span><span id="busyMsg">Working…</span></div></div>
+<input type="file" id="fileOpen" accept=".json,.xlsx,.xlsm,application/json" hidden>
+<input type="file" id="filePrev" accept=".pdf,.json,.xlsx,.xlsm,application/pdf,application/json" hidden>
+<script>
+'use strict';
+const LOGO = 'data:image/png;base64,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';
+const LOGO_RATIO = 147 / 640;
+const EXAMPLE = {"structure":"DOW 014mls 0176yds Str.24A","datumLevel":10,"datumLocation":"Located to: Underside of downstream Crown","dates":["2026-08-19","2023-07-13","2020-06-19"],"d2w":[1.7,1.5,1.7],"xs":{"us30":[{"label":"US BANK","reading":-1.1,"prev":8.9,"pen":10.3},{"label":"1","reading":0.5,"prev":8.1,"pen":9.8},{"label":"2","reading":1,"prev":7.7,"pen":8.8},{"label":"3","reading":1,"prev":7.3,"pen":8},{"label":"4","reading":0.9,"prev":7.3,"pen":7.4},{"label":"5","reading":0.7,"prev":7.3,"pen":7.7},{"label":"6","reading":0.4,"prev":7.9,"pen":8.8},{"label":"7","reading":0.1,"prev":8.8,"pen":9.8},{"label":"DS BANK","reading":-0.5,"prev":8.9,"pen":10.3}],"usFace":[{"label":"US ABT","reading":-0.1,"prev":8.2,"pen":7.8},{"label":"1","reading":0.7,"prev":7.6,"pen":7.3},{"label":"2","reading":0.9,"prev":7.3,"pen":7.3},{"label":"3","reading":0.7,"prev":7.4,"pen":7.3},{"label":"DS ABT","reading":-0.2,"prev":8.6,"pen":8.5}],"centre":[{"label":"US ABT","reading":0,"prev":7.9,"pen":7.7},{"label":"1","reading":0.8,"prev":7.7,"pen":7.6},{"label":"2","reading":0.1,"prev":7.4,"pen":7.3},{"label":"3","reading":0.9,"prev":7.6,"pen":7.3},{"label":"DS ABT","reading":0.5,"prev":8.6,"pen":8.2}],"dsFace":[{"label":"US ABT","reading":0.1,"prev":8,"pen":7.7},{"label":"1","reading":0.6,"prev":7.9,"pen":7.7},{"label":"2","reading":0.9,"prev":7.7,"pen":7.7},{"label":"3","reading":0.9,"prev":7.9,"pen":7.8},{"label":"DS ABT","reading":0.4,"prev":8.4,"pen":8.2}],"ds30":[{"label":"US BANK","reading":-1,"prev":8.9,"pen":10.8},{"label":"1","reading":0.6,"prev":8.1,"pen":9.8},{"label":"2","reading":0.9,"prev":7.8,"pen":8.8},{"label":"3","reading":1.1,"prev":7.4,"pen":7.3},{"label":"4","reading":1.1,"prev":7.4,"pen":7.1},{"label":"5","reading":1,"prev":7.5,"pen":7.1},{"label":"6","reading":0.9,"prev":7.9,"pen":7.3},{"label":"7","reading":0.7,"prev":7.9,"pen":8.9},{"label":"DS BANK","reading":-1.1,"prev":9.8,"pen":9.8}]},"elements":[{"name":"US ABT","type":"abutment","side":"right","radials":[{"n":1,"points":[{"d":0,"reading":-0.1,"prev":8.2,"pen":7.8},{"d":1,"reading":0.2,"prev":8.9,"pen":8.6},{"d":2,"reading":0.3,"prev":8.6,"pen":8.6},{"d":3,"reading":0.5,"prev":8.6,"pen":8.6}]},{"n":2,"points":[{"d":0,"reading":-0.1,"prev":8.2,"pen":7.8},{"d":1,"reading":0.8,"prev":7.9,"pen":7.8},{"d":2,"reading":0.9,"prev":7.5,"pen":7.3},{"d":3,"reading":1.1,"prev":7.3,"pen":7.1}]},{"n":3,"points":[{"d":0,"reading":-0.1,"prev":8.2,"pen":7.8},{"d":1,"reading":0.7,"prev":7.6,"pen":7.3},{"d":2,"reading":0.9,"prev":7.3,"pen":7.3},{"d":3,"reading":0.7,"prev":7.4,"pen":7.3}]},{"n":4,"points":[{"d":0,"reading":0,"prev":8.2,"pen":7.8},{"d":1,"reading":0.7,"prev":7.7,"pen":7.6},{"d":2,"reading":0.9,"prev":7.4,"pen":7.3},{"d":3,"reading":0.7,"prev":7.7,"pen":7.3}]},{"n":5,"points":[{"d":0,"reading":0,"prev":7.9,"pen":7.7},{"d":1,"reading":0.8,"prev":7.7,"pen":7.6},{"d":2,"reading":1,"prev":7.4,"pen":7.3},{"d":3,"reading":0.9,"prev":7.6,"pen":7.3}]},{"n":6,"points":[{"d":0,"reading":0,"prev":7.7,"pen":7.6},{"d":1,"reading":0.8,"prev":7.5,"pen":7.6},{"d":2,"reading":1,"prev":7.4,"pen":7.1},{"d":3,"reading":0.9,"prev":7.5,"pen":7.3}]},{"n":7,"points":[{"d":0,"reading":0.1,"prev":8,"pen":7.7},{"d":1,"reading":0.6,"prev":7.9,"pen":7.7},{"d":2,"reading":0.9,"prev":7.7,"pen":7.7},{"d":3,"reading":0.9,"prev":7.9,"pen":7.8}]},{"n":8,"points":[{"d":0,"reading":-0.1,"prev":8.4,"pen":8.2},{"d":1,"reading":0.9,"prev":7.8,"pen":7.9},{"d":2,"reading":1.2,"prev":7.5,"pen":7.4},{"d":3,"reading":1.2,"prev":7.5,"pen":7.1}]},{"n":9,"points":[{"d":0,"reading":-0.1,"prev":8.4,"pen":8.2},{"d":1,"reading":-0.2,"prev":8.7,"pen":8.4},{"d":2,"reading":-0.2,"prev":9.1,"pen":8.6},{"d":3,"reading":-0.3,"prev":9.1,"pen":8.8}]}]},{"name":"DS ABT","type":"abutment","side":"left","radials":[{"n":1,"points":[{"d":0,"reading":0.2,"prev":8.6,"pen":8.5},{"d":1,"reading":0.2,"prev":8.8,"pen":8.6},{"d":2,"reading":0.2,"prev":8.8,"pen":8.9},{"d":3,"reading":0.3,"prev":9,"pen":9.1}]},{"n":2,"points":[{"d":0,"reading":0.2,"prev":8.6,"pen":8.5},{"d":1,"reading":0.6,"prev":7.9,"pen":7.6},{"d":2,"reading":0.9,"prev":7.5,"pen":7.3},{"d":3,"reading":1.1,"prev":7.4,"pen":7.1}]},{"n":3,"points":[{"d":0,"reading":0.2,"prev":8.6,"pen":8.5},{"d":1,"reading":0.7,"prev":7.4,"pen":7.3},{"d":2,"reading":0.9,"prev":7.3,"pen":7.3},{"d":3,"reading":0.7,"prev":7.6,"pen":7.3}]},{"n":4,"points":[{"d":0,"reading":0.4,"prev":8.3,"pen":8.2},{"d":1,"reading":0.6,"prev":7.6,"pen":7.3},{"d":2,"reading":0.7,"prev":7.4,"pen":7.3},{"d":3,"reading":0.9,"prev":7.7,"pen":7.6}]},{"n":5,"points":[{"d":0,"reading":0.5,"prev":8.6,"pen":8.2},{"d":1,"reading":0.9,"prev":7.6,"pen":7.3},{"d":2,"reading":1,"prev":7.4,"pen":7.3},{"d":3,"reading":0.8,"prev":7.7,"pen":7.3}]},{"n":6,"points":[{"d":0,"reading":0.4,"prev":8.3,"pen":8.2},{"d":1,"reading":0.7,"prev":7.7,"pen":7.3},{"d":2,"reading":0.9,"prev":7.3,"pen":7.1},{"d":3,"reading":0.9,"prev":7.7,"pen":7.6}]},{"n":7,"points":[{"d":0,"reading":0.4,"prev":8.4,"pen":8.2},{"d":1,"reading":0.9,"prev":7.9,"pen":7.8},{"d":2,"reading":0.9,"prev":7.7,"pen":7.7},{"d":3,"reading":0.6,"prev":7.9,"pen":7.7}]},{"n":8,"points":[{"d":0,"reading":0.4,"prev":8.4,"pen":8.2},{"d":1,"reading":0.7,"prev":8.2,"pen":8.4},{"d":2,"reading":1,"prev":7.3,"pen":7.6},{"d":3,"reading":1,"prev":7.4,"pen":7.3}]},{"n":9,"points":[{"d":0,"reading":0.4,"prev":8.4,"pen":8.2},{"d":1,"reading":0.4,"prev":8.8,"pen":8.4},{"d":2,"reading":0.4,"prev":8.9,"pen":8.6},{"d":3,"reading":0.4,"prev":8.9,"pen":8.8}]}]}]};
+const LIBS = {
+  sheetjs: 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+  exceljs: 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js',
+  jspdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+  pdfjs: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+  pdfworker: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'
+};
+const FONT = 'Arial, Helvetica, sans-serif';
+const COL = { cur: '#000000', prevXS: '#FF00FF', prevRad: '#C0504D', pen: '#76A23A', water: '#3366FF', datum: '#000000', conf: '#FF0000' };
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function num(v) {
+  if (v == null) return null;
+  if (typeof v === 'number') return isFinite(v) ? v : null;
+  const s = String(v).trim().replace(/\s/g, '').replace(',', '.');
+  if (s === '' || s === '-' || s === '.' || s === '-.') return null;
+  const n = Number(s);
+  return isFinite(n) ? n : null;
+}
+const r2 = v => v == null ? null : Math.round(v * 100) / 100;
+const fv = v => v == null ? '' : String(r2(v));
+function fmtDate(iso) { if (!iso) return ''; const p = String(iso).split('-'); if (p.length !== 3) return String(iso); return `${p[2]}/${p[1]}/${p[0].slice(2)}`; }
+let _uid = 0; const newId = () => 'e' + Date.now().toString(36) + (_uid++);
+const clone = o => JSON.parse(JSON.stringify(o));
+
+const SECTIONS = [
+  { key: 'us30', chip: '30m U/S', name: '30m upstream', table: '30m U/S Bed Profile Levels (m)', dist: ['Distance across', 'watercourse U/S', '(m)'], plot: '30M UPSTREAM CROSS SECTION PLOT', face: false },
+  { key: 'usFace', chip: 'U/S face', name: 'Upstream face of structure', table: 'U/S Face of Structure Bed Profile Levels (m)', dist: ['Distance across', 'watercourse (m)'], plot: 'UPSTREAM FACE OF STRUCTURE CROSS SECTION PLOT', face: true },
+  { key: 'centre', chip: 'Centreline', name: 'Centreline of structure', table: 'Centreline of Structure Bed Profile Levels (m)', dist: ['Distance across', 'watercourse (m)'], plot: 'CENTRE LINE OF STRUCTURE CROSS SECTION PLOT', face: true },
+  { key: 'dsFace', chip: 'D/S face', name: 'Downstream face of structure', table: 'D/S Face of Structure Bed Profile Levels (m)', dist: ['Distance across', 'watercourse (m)'], plot: 'DOWNSTREAM FACE OF STRUCTURE CROSS SECTION PLOT', face: true },
+  { key: 'ds30', chip: '30m D/S', name: '30m downstream', table: '30m D/S Bed Profile Levels (m)', dist: ['Distance across', 'watercourse D/S', '(m)'], plot: '30M DOWNSTREAM CROSS SECTION PLOT', face: false }
+];
+const TYPE_RADIALS = { abutment: 9, pier: 16, cylinder: 4 };
+const TYPE_LABEL = { abutment: 'Abutment', pier: 'Pier', cylinder: 'Cylinder' };
+
+/* ---------------- model ---------------- */
+function defaultRows(face) {
+  return (face ? ['US ABT', '1', '2', '3', 'DS ABT'] : ['US BANK', '1', '2', '3', '4', '5', '6', '7', 'DS BANK'])
+    .map(label => ({ label, reading: null, prev: null, pen: null }));
+}
+function defaultRadials(n) {
+  return Array.from({ length: n }, (_, i) => ({ n: i + 1, points: [0, 1, 2, 3].map(d => ({ d, reading: null, prev: null, pen: null })) }));
+}
+function newElement(type, name, side) {
+  return { id: newId(), name, type, side: side || 'left', shape: 'square', radials: defaultRadials(TYPE_RADIALS[type]) };
+}
+function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function blankState() {
+  return {
+    app: 'aureos-underwater-soundings', version: 1,
+    structure: '', datumLevel: 10, datumLocation: '', inputMode: 'reading', sketchOrient: 'down', checkThreshold: 0.75,
+    dates: { current: todayISO(), previous: '', penultimate: '' },
+    d2w: { current: null, previous: null, penultimate: null },
+    xs: Object.fromEntries(SECTIONS.map(s => [s.key, defaultRows(s.face)])),
+    elements: [newElement('abutment', 'US ABT', 'right'), newElement('abutment', 'DS ABT', 'left')]
+  };
+}
+function normalize(o) {
+  const b = blankState();
+  const s = Object.assign({}, b, o || {});
+  s.app = b.app; s.version = b.version;
+  s.structure = String(s.structure ?? ''); s.datumLocation = String(s.datumLocation ?? '');
+  s.datumLevel = num(s.datumLevel);
+  s.inputMode = s.inputMode === 'level' ? 'level' : 'reading';
+  s.sketchOrient = normOrient(s.sketchOrient);
+  s.checkThreshold = num(s.checkThreshold) > 0 ? num(s.checkThreshold) : 0.75;
+  s.dates = { current: '', previous: '', penultimate: '', ...(o && o.dates || {}) };
+  s.d2w = { current: null, previous: null, penultimate: null, ...(o && o.d2w || {}) };
+  for (const k of ['current', 'previous', 'penultimate']) { s.d2w[k] = num(s.d2w[k]); s.dates[k] = s.dates[k] ? String(s.dates[k]) : ''; }
+  s.xs = {};
+  SECTIONS.forEach(sec => {
+    const rows = o && o.xs && o.xs[sec.key];
+    s.xs[sec.key] = Array.isArray(rows)
+      ? rows.map(r => ({ label: String(r.label ?? ''), reading: num(r.reading), prev: num(r.prev), pen: num(r.pen) }))
+      : defaultRows(sec.face);
+  });
+  const els = o && Array.isArray(o.elements) ? o.elements : b.elements;
+  s.elements = els.map(e => ({
+    id: e.id || newId(), name: String(e.name || 'Element'),
+    type: TYPE_RADIALS[e.type] ? e.type : 'abutment',
+    side: e.side === 'right' ? 'right' : 'left', shape: e.shape === 'cutwater' ? 'cutwater' : 'square',
+    radials: (e.radials || []).map((r, i) => ({
+      n: Number(r.n) || i + 1,
+      points: (r.points || []).map(p => ({ d: num(p.d) ?? 0, reading: num(p.reading), prev: num(p.prev), pen: num(p.pen) }))
+    }))
+  }));
+  return s;
+}
+function exampleState() {
+  const e = EXAMPLE;
+  return normalize({
+    structure: e.structure, datumLevel: e.datumLevel, datumLocation: e.datumLocation,
+    dates: { current: e.dates[0], previous: e.dates[1], penultimate: e.dates[2] },
+    d2w: { current: e.d2w[0], previous: e.d2w[1], penultimate: e.d2w[2] },
+    xs: e.xs, elements: e.elements
+  });
+}
+const waterOf = (s, which = 'current') => (s.datumLevel != null && s.d2w[which] != null) ? r2(s.datumLevel - s.d2w[which]) : null;
+const levelOf = (s, reading) => { const w = waterOf(s); return (w == null || reading == null) ? null : r2(w - reading); };
+const hasAny = arr => arr.some(v => v != null);
+
+/* ---------------- svg helpers ---------------- */
+let _svgId = 0;
+function polyPath(pts) {
+  let d = '', pen = false;
+  for (const p of pts) {
+    if (!p) { pen = false; continue; }
+    d += (pen ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+    pen = true;
+  }
+  return d;
+}
+function marker(kind, x, y, size, color) {
+  const s = size;
+  if (kind === 'diamond') return `<polygon points="${x},${y - s} ${x + s},${y} ${x},${y + s} ${x - s},${y}" fill="${color}"/>`;
+  if (kind === 'triangle') return `<polygon points="${x},${y - s * 1.1} ${x + s},${y + s * 0.8} ${x - s},${y + s * 0.8}" fill="${color}"/>`;
+  if (kind === 'square') return `<rect x="${x - s * .8}" y="${y - s * .8}" width="${s * 1.6}" height="${s * 1.6}" fill="${color}"/>`;
+  return '';
+}
+function yRange(values) {
+  const v = values.filter(x => x != null);
+  let lo = 4, hi = 11;
+  if (v.length) { lo = Math.min(4, Math.floor(Math.min(...v) - 0.5)); hi = Math.max(11, Math.ceil(Math.max(...v) + 0.3)); }
+  return [lo, hi];
+}
+function legendRow(items, cx, y, fs) {
+  const widths = items.map(it => 46 + it.name.length * fs * 0.56);
+  const total = widths.reduce((a, b) => a + b, 0) + (items.length - 1) * 18;
+  let x = cx - total / 2, out = '';
+  items.forEach((it, i) => {
+    const dash = it.dash ? ` stroke-dasharray="${it.dash}"` : '';
+    out += `<line x1="${x}" y1="${y}" x2="${x + 34}" y2="${y}" stroke="${it.color}" stroke-width="${it.width}"${dash}/>`;
+    if (it.marker) out += marker(it.marker, x + 17, y, 3.4, it.color);
+    out += `<text x="${x + 40}" y="${y + fs * 0.35}" font-size="${fs}">${esc(it.name)}</text>`;
+    x += widths[i] + 18;
+  });
+  return out;
+}
+
+/* Cross-section chart (categorical x, like the Excel plots) */
+function xsChart(o) {
+  const { w = 900, h = 520, labels, series, water, datum, face, legend = true, fs = 12 } = o;
+  const n = labels.length;
+  const L = face ? 118 : 74, R = w - (face ? 64 : 28), T = 22, B = h - (legend ? 92 : 56);
+  const [lo, hi] = yRange([...series.flatMap(s => s.values), water, datum]);
+  const X = i => n <= 1 ? (L + R) / 2 : L + i * (R - L) / (n - 1);
+  const Y = v => B - (v - lo) * (B - T) / (hi - lo);
+  let g = `<rect x="0" y="0" width="${w}" height="${h}" fill="#fff"/>`;
+  g += `<rect x="${L}" y="${T}" width="${R - L}" height="${B - T}" fill="none" stroke="#B5B5B5" stroke-width="1"/>`;
+  if (face) {
+    g += `<rect x="${L - 44}" y="${T + 4}" width="40" height="${B - T - 4}" fill="#E8E8E8" stroke="#333" stroke-width="1"/>`;
+    g += `<rect x="${R + 4}" y="${T + 4}" width="40" height="${B - T - 4}" fill="#E8E8E8" stroke="#333" stroke-width="1"/>`;
+  }
+  const step = (hi - lo) > 12 ? 2 : 1;
+  const axX = face ? L - 48 : L;
+  g += `<line x1="${axX}" y1="${T}" x2="${axX}" y2="${B}" stroke="#000"/>`;
+  g += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="#000"/>`;
+  for (let v = lo; v <= hi + 1e-9; v += step) {
+    g += `<line x1="${axX - 5}" y1="${Y(v)}" x2="${axX}" y2="${Y(v)}" stroke="#000"/><text x="${axX - 9}" y="${Y(v) + fs * .35}" font-size="${fs}" text-anchor="end">${v}</text>`;
+  }
+  const every = n > 22 ? 2 : 1;
+  labels.forEach((lb, i) => {
+    g += `<line x1="${X(i)}" y1="${B}" x2="${X(i)}" y2="${B + 5}" stroke="#000"/>`;
+    if (i % every === 0 || i === n - 1) g += `<text x="${X(i)}" y="${B + 8 + fs}" font-size="${fs}" text-anchor="middle">${esc(lb)}</text>`;
+  });
+  g += `<text transform="translate(${axX - 44} ${(T + B) / 2}) rotate(-90)" font-size="${fs}" font-weight="bold" text-anchor="middle">Reduced Level (m)</text>`;
+  g += `<text x="${(L + R) / 2}" y="${B + 22 + fs * 2}" font-size="${fs}" font-weight="bold" text-anchor="middle">Distance Across Watercourse (m)</text>`;
+  if (water != null && water >= lo && water <= hi) g += `<line x1="${L}" y1="${Y(water)}" x2="${R}" y2="${Y(water)}" stroke="${COL.water}" stroke-width="3.5"/>`;
+  if (datum != null && datum >= lo && datum <= hi) g += `<line x1="${L}" y1="${Y(datum)}" x2="${R}" y2="${Y(datum)}" stroke="${COL.datum}" stroke-width="2.6" stroke-dasharray="11 7"/>`;
+  [...series].reverse().forEach(s => {
+    if (!hasAny(s.values)) return;
+    const pts = s.values.map((v, i) => v == null ? null : [X(i), Y(v)]);
+    g += `<path d="${polyPath(pts)}" fill="none" stroke="${s.color}" stroke-width="${s.width}" stroke-linejoin="round"/>`;
+    pts.forEach(p => { if (p) g += marker(s.marker, p[0], p[1], s.msize || 3.6, s.color); });
+  });
+  if (legend) {
+    const items = [];
+    series.forEach(s => { if (hasAny(s.values)) items.push(s); });
+    items.push({ name: 'Water Level (m)', color: COL.water, width: 3.5 });
+    if (datum != null) items.push({ name: o.datumName || 'Datum', color: '#000', width: 2.6, dash: '8 5' });
+    const ly = h - 22;
+    g += `<rect x="${w * 0.12}" y="${ly - 15}" width="${w * 0.76}" height="30" fill="none" stroke="#000" stroke-width=".8"/>`;
+    g += legendRow(items, w / 2, ly, fs - 1.5);
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="${FONT}">${g}</svg>`;
+}
+function xsSeries(s, key) {
+  const rows = s.xs[key];
+  return [
+    { name: fmtDate(s.dates.current) || 'Current', values: rows.map(r => levelOf(s, r.reading)), color: COL.cur, width: 1.4, marker: 'diamond' },
+    { name: fmtDate(s.dates.previous) || 'Previous', values: rows.map(r => r.prev), color: COL.prevXS, width: 1.4, marker: 'diamond' },
+    { name: fmtDate(s.dates.penultimate) || 'Penultimate', values: rows.map(r => r.pen), color: COL.pen, width: 2.6, marker: 'triangle', msize: 4.2 }
+  ];
+}
+function xsChartFor(s, key, opts = {}) {
+  const sec = SECTIONS.find(x => x.key === key);
+  return xsChart(Object.assign({
+    labels: s.xs[key].map(r => r.label), series: xsSeries(s, key),
+    water: waterOf(s), datum: s.datumLevel, face: sec.face, datumName: s.datumLocation || 'Datum'
+  }, opts));
+}
+
+/* Radial chart: hatched structure block on the left, distance from structure on x */
+function radialChart(o) {
+  const { w = 520, h = 330, title, dists, series, water, fs = 12 } = o;
+  const id = 'h' + (++_svgId);
+  const L = 104, R = w - 22, T = title ? 34 : 14, B = h - 50;
+  const [lo, hi] = yRange([...series.flatMap(s => s.values), water]);
+  const dmax = Math.max(1, ...dists.filter(d => d != null));
+  const x0 = L + 16, x1 = R - 30;
+  const X = d => x0 + d * (x1 - x0) / dmax;
+  const Y = v => B - (v - lo) * (B - T) / (hi - lo);
+  let g = `<defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#555" stroke-width="1.2"/></pattern></defs>`;
+  g += `<rect x="0" y="0" width="${w}" height="${h}" fill="#fff"/>`;
+  if (title) g += `<text x="${(L + R) / 2}" y="${T - 14}" font-size="${fs + 1}" text-anchor="middle">${esc(title)}</text>`;
+  for (let v = lo; v <= hi + 1e-9; v++) {
+    g += `<line x1="${L}" y1="${Y(v)}" x2="${R}" y2="${Y(v)}" stroke="#D0D0D0"/>`;
+    g += `<text x="${L - 50}" y="${Y(v) + fs * .35}" font-size="${fs - 1}" text-anchor="end">${v}</text>`;
+  }
+  g += `<rect x="${L - 42}" y="${T}" width="42" height="${B - T}" fill="url(#${id})" stroke="#000" stroke-width="1.2"/>`;
+  g += `<line x1="${L}" y1="${B}" x2="${R}" y2="${B}" stroke="#000"/>`;
+  for (let d = 0; d <= dmax + 1e-9; d++) g += `<line x1="${X(d)}" y1="${B}" x2="${X(d)}" y2="${B + 4}" stroke="#000"/><text x="${X(d)}" y="${B + 8 + fs}" font-size="${fs - 1}" text-anchor="middle">${d}</text>`;
+  g += `<text transform="translate(${L - 76} ${(T + B) / 2}) rotate(-90)" font-size="${fs - 1}" font-weight="bold" text-anchor="middle">Reduced Level (m)</text>`;
+  g += `<text x="${(x0 + x1) / 2}" y="${h - 10}" font-size="${fs - 1}" font-weight="bold" text-anchor="middle">Distance across Bed (m)</text>`;
+  if (water != null && water >= lo && water <= hi) g += `<line x1="${X(0)}" y1="${Y(water)}" x2="${X(dmax)}" y2="${Y(water)}" stroke="#2E86DE" stroke-width="2"/>`;
+  [...series].reverse().forEach(s => {
+    if (!hasAny(s.values)) return;
+    const pts = s.values.map((v, i) => (v == null || dists[i] == null) ? null : [X(dists[i]), Y(v)]);
+    g += `<path d="${polyPath(pts)}" fill="none" stroke="${s.color}" stroke-width="1.6"/>`;
+    pts.forEach(p => { if (p) g += marker(s.marker, p[0], p[1], 3.6, s.color); });
+  });
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" font-family="${FONT}">${g}</svg>`;
+}
+function radialSeries(s, rad) {
+  return [
+    { values: rad.points.map(p => levelOf(s, p.reading)), color: COL.cur, marker: 'diamond' },
+    { values: rad.points.map(p => p.prev), color: COL.prevRad, marker: 'square' },
+    { values: rad.points.map(p => p.pen), color: '#9BBB59', marker: 'triangle' }
+  ];
+}
+function radialChartFor(s, rad, opts = {}) {
+  return radialChart(Object.assign({ title: 'Radial ' + rad.n, dists: rad.points.map(p => p.d), series: radialSeries(s, rad), water: waterOf(s) }, opts));
+}
+
+/* ---------------- radial sketches ---------------- */
+// Geometry is built in "flow-down" space (flow travels +y) then mapped for orientation.
+function sketchGeometry(elements, orient = 'vertical', opts = {}) {
+  const H = 250, prims = [];
+  const line = (a, b, o = {}) => prims.push({ k: 'line', a, b, ...o });
+  const text = (p, t, o = {}) => prims.push({ k: 'text', p, t: String(t), ...o });
+  const radLine = (a, b, n, lp) => { line(a, b, { dash: true }); text(lp, n, { size: 13 }); };
+  const count = e => e.n ?? (e.radials ? e.radials.length : TYPE_RADIALS[e.type]);
+
+  // Abutments: 1 in line with the wall at the upstream end, 2 diagonal, 3..7 along the face
+  // (3 and 7 from the corners, along the wing-wall line), 8 diagonal, 9 in line at the downstream end.
+  function abutment(e, ox) {
+    const dir = e.side === 'right' ? -1 : 1; // channel side
+    const N = Math.max(1, count(e));
+    line([ox - dir * 75, 0], [ox, 0], { w: 2.4 }); line([ox - dir * 75, H], [ox, H], { w: 2.4 });
+    line([ox, 0], [ox, H], { w: 2.4 });
+    const seq = [];
+    seq.push(() => [[ox, 0], [ox, -48], [ox, -60]]);
+    seq.push(() => [[ox, 0], [ox + dir * 72, -42], [ox + dir * 82, -50]]);
+    const k = Math.max(0, N - 4);
+    for (let j = 0; j < k; j++) { const y = k === 1 ? H / 2 : j * H / (k - 1); seq.push(() => [[ox, y], [ox + dir * 72, y], [ox + dir * 86, y]]); }
+    seq.push(() => [[ox, H], [ox + dir * 72, H + 42], [ox + dir * 82, H + 50]]);
+    seq.push(() => [[ox, H], [ox, H + 48], [ox, H + 60]]);
+    let order = seq;
+    if (N < 4) order = [seq[0], seq[1], seq[seq.length - 1]].slice(0, N);
+    order.slice(0, N).forEach((f, i) => { const [a, b, l] = f(); radLine(a, b, i + 1, l); });
+    text([ox - dir * 42, H / 2], e.name, { size: 12, bold: true });
+  }
+  // Piers: radial 1 at the upstream nose, then clockwise -
+  // 2 diagonal, 3..7 down one side (corner to corner), 8 diagonal, 9 far nose, 10 diagonal, 11..15 back up the other side, 16 diagonal.
+  function pier(e, cx) {
+    const hw = 28, N = Math.max(4, count(e)), cut = e.shape === 'cutwater';
+    const nose = cut ? 34 : 0;                       // height of the pointed ends
+    const yt = nose, yb = H - nose;                   // shoulders / corners
+    if (cut) prims.push({ k: 'poly', pts: [[cx - hw, yt], [cx, 0], [cx + hw, yt], [cx + hw, yb], [cx, H], [cx - hw, yb]] });
+    else prims.push({ k: 'poly', pts: [[cx - hw, 0], [cx + hw, 0], [cx + hw, H], [cx - hw, H]] });
+    const k = Math.max(1, Math.round((N - 6) / 2));   // 5 per side for 16 radials
+    const sideY = j => k === 1 ? (yt + yb) / 2 : yt + j * (yb - yt) / (k - 1);
+    const L = 62, D = [56, 44];
+    const seq = [];
+    seq.push([[cx, 0], [cx, -46], [cx, -58]]);
+    seq.push([[cx + hw, yt], [cx + hw + D[0], yt - D[1]], [cx + hw + D[0] + 9, yt - D[1] - 8]]);
+    for (let j = 0; j < k; j++) { const y = sideY(j); seq.push([[cx + hw, y], [cx + hw + L, y], [cx + hw + L + 13, y]]); }
+    seq.push([[cx + hw, yb], [cx + hw + D[0], yb + D[1]], [cx + hw + D[0] + 9, yb + D[1] + 8]]);
+    seq.push([[cx, H], [cx, H + 46], [cx, H + 58]]);
+    seq.push([[cx - hw, yb], [cx - hw - D[0], yb + D[1]], [cx - hw - D[0] - 9, yb + D[1] + 8]]);
+    for (let j = k - 1; j >= 0; j--) { const y = sideY(j); seq.push([[cx - hw, y], [cx - hw - L, y], [cx - hw - L - 13, y]]); }
+    seq.push([[cx - hw, yt], [cx - hw - D[0], yt - D[1]], [cx - hw - D[0] - 9, yt - D[1] - 8]]);
+    seq.slice(0, N).forEach((s, i) => radLine(s[0], s[1], i + 1, s[2]));
+    text([cx, H / 2], e.name, { size: 11, bold: true });
+  }
+  // Cylinders (as the template): a cross upstream of the cylinder - 1 upstream, 2 and 4 to either side,
+  // with the line running on into the cylinder.
+  function cylinder(e, cx) {
+    const r = 34, cy = H - r - 10, py = cy - r - 70;
+    prims.push({ k: 'circle', c: [cx, cy], r });
+    const N = Math.max(1, count(e));
+    line([cx, py], [cx, cy - r], { dash: true });
+    const arms = [
+      [[cx, py], [cx, py - 62], [cx, py - 74]],
+      [[cx, py], [cx + 78, py], [cx + 90, py]],
+      null,
+      [[cx, py], [cx - 78, py], [cx - 90, py]]
+    ];
+    for (let i = 0; i < Math.min(N, 4); i++) { const a = arms[i]; if (a) radLine(a[0], a[1], i + 1, a[2]); }
+    text([cx, cy], e.name, { size: 11, bold: true });
+  }
+  const left = elements.filter(e => e.type === 'abutment' && e.side === 'left');
+  const right = elements.filter(e => e.type === 'abutment' && e.side === 'right');
+  const mid = elements.filter(e => e.type !== 'abutment');
+  const ordered = [...left, ...mid, ...right];
+  let x = 0; const xs = [];
+  ordered.forEach((e, i) => {
+    if (i > 0) { const prev = ordered[i - 1]; x += (prev.type === 'abutment' && prev.side === 'left') || (e.type === 'abutment' && e.side === 'right') ? 230 : 240; }
+    xs.push(x);
+    if (e.type === 'abutment') abutment(e, x); else if (e.type === 'pier') pier(e, x); else cylinder(e, x);
+  });
+  if (opts.flow !== false && ordered.length) {
+    const cx = ordered.length > 1 ? (xs[0] + xs[xs.length - 1]) / 2 : xs[0] + (ordered[0].type === 'abutment' ? (ordered[0].side === 'right' ? -110 : 110) : ordered[0].type === 'cylinder' ? 150 : 130);
+    const top = ordered.every(e => e.type === 'cylinder') ? -50 : -142;
+    text([cx, top], 'FLOW', { size: 13 });
+    prims.push({ k: 'arrow', a: [cx, top + 30], b: [cx, top + 80] });
+  }
+  const o = normOrient(orient);
+  const M = o === 'right' ? (p => [p[1], -p[0]]) : o === 'left' ? (p => [-p[1], p[0]]) : o === 'up' ? (p => [-p[0], -p[1]]) : (p => [p[0], p[1]]);
+  return prims.map(p => {
+    const q = { ...p };
+    if (p.a) q.a = M(p.a); if (p.b) q.b = M(p.b); if (p.p) q.p = M(p.p); if (p.c) q.c = M(p.c);
+    if (p.pts) q.pts = p.pts.map(M);
+    return q;
+  });
+}
+const ORIENTS = [['down', 'Flow down'], ['up', 'Flow up'], ['right', 'Flow left to right'], ['left', 'Flow right to left']];
+function normOrient(o) { return o === 'horizontal' ? 'right' : o === 'vertical' || !o ? 'down' : (ORIENTS.some(x => x[0] === o) ? o : 'down'); }
+function sketchSVG(prims, o = {}) {
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const ext = (x, y, pad = 0) => { minX = Math.min(minX, x - pad); maxX = Math.max(maxX, x + pad); minY = Math.min(minY, y - pad); maxY = Math.max(maxY, y + pad); };
+  let g = '';
+  for (const p of prims) {
+    if (p.k === 'line') { ext(...p.a); ext(...p.b); g += `<line x1="${p.a[0]}" y1="${p.a[1]}" x2="${p.b[0]}" y2="${p.b[1]}" stroke="#000" stroke-width="${p.dash ? 1.1 : (p.w || 2)}"${p.dash ? ' stroke-dasharray="5 3"' : ''}/>`; }
+    else if (p.k === 'arrow') { ext(...p.a); ext(...p.b); const [ax, ay] = p.a, [bx, by] = p.b; const ang = Math.atan2(by - ay, bx - ax); const s = 7; const l1 = [bx - s * Math.cos(ang - .45), by - s * Math.sin(ang - .45)], l2 = [bx - s * Math.cos(ang + .45), by - s * Math.sin(ang + .45)]; g += `<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#000" stroke-width="1.2"/><polyline points="${l1} ${bx},${by} ${l2}" fill="none" stroke="#000" stroke-width="1.2"/>`; }
+    else if (p.k === 'poly') { p.pts.forEach(q => ext(...q)); g += `<polygon points="${p.pts.map(q => q.join(',')).join(' ')}" fill="#fff" stroke="#000" stroke-width="2"/>`; }
+    else if (p.k === 'circle') { ext(p.c[0], p.c[1], p.r); g += `<circle cx="${p.c[0]}" cy="${p.c[1]}" r="${p.r}" fill="#fff" stroke="#000" stroke-width="1.6"/>`; }
+    else if (p.k === 'text') { const tw = p.t.length * p.size * 0.32; ext(p.p[0] - tw, p.p[1], 10); ext(p.p[0] + tw, p.p[1], 10); g += `<text x="${p.p[0]}" y="${p.p[1] + p.size * 0.36}" font-size="${p.size}" text-anchor="middle"${p.bold ? ' font-weight="bold"' : ''}>${esc(p.t)}</text>`; }
+  }
+  if (!isFinite(minX)) { minX = 0; minY = 0; maxX = 100; maxY = 100; }
+  const pad = o.pad ?? 16;
+  const vb = [minX - pad, minY - pad, maxX - minX + pad * 2, maxY - minY + pad * 2];
+  if (o.raw) return { g, vb };
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.map(v => v.toFixed(1)).join(' ')}" font-family="${FONT}" role="img" aria-label="${esc(o.label || 'Radial sketch')}">${g}</svg>`;
+}
+
+const ABT = (side, name) => ({ type: 'abutment', side, name, n: 9 });
+const PIER = (shape, name = 'Pier') => ({ type: 'pier', shape, name, n: 16 });
+const LIBRARY = [
+  { title: 'Abutments, flow down', note: 'Radial 1 in line with each wall at the upstream end, 3 to 7 along the face, 9 at the downstream end.', orient: 'down', els: [ABT('left', 'LM ABT'), ABT('right', 'HM ABT')] },
+  { title: 'Square pier, flow down', note: '1 at the upstream end, then clockwise: 3 to 7 down the right side, 9 downstream, 11 to 15 back up the left.', orient: 'down', els: [PIER('square')] },
+  { title: 'Cutwater pier, flow down', note: 'As the square pier, with 1 and 9 at the noses and 3, 7, 11, 15 at the shoulders.', orient: 'down', els: [PIER('cutwater')] },
+  { title: 'Cylinder', note: 'Cross on the upstream side: 1 upstream, 2 and 4 to either side.', orient: 'down', els: [{ type: 'cylinder', name: 'Cyl 1', n: 4 }] },
+  { title: 'Abutments, flow up', note: 'Same numbering with the upstream end at the bottom of the page.', orient: 'up', els: [ABT('left', 'HM ABT'), ABT('right', 'LM ABT')] },
+  { title: 'Square pier, flow up', note: '1 at the bottom (upstream), clockwise: 3 to 7 up the left side, 11 to 15 down the right.', orient: 'up', els: [PIER('square')] },
+  { title: 'Cutwater pier, flow up', note: 'Pointed ends, numbered clockwise from the upstream nose at the bottom.', orient: 'up', els: [PIER('cutwater')] },
+  { title: 'Abutments, flow left to right', note: '1 at the left (upstream) end of each wall, 9 at the right.', orient: 'right', els: [ABT('left', 'Abutment'), ABT('right', 'Abutment')] },
+  { title: 'Square pier, flow left to right', note: '1 at the left nose, clockwise: 3 to 7 along the top, 11 to 15 back along the bottom.', orient: 'right', els: [PIER('square')] },
+  { title: 'Cutwater pier, flow left to right', note: 'Pointed ends, numbered clockwise from the left nose.', orient: 'right', els: [PIER('cutwater')] },
+  { title: 'Abutments, flow right to left', note: '1 at the right (upstream) end of each wall, 9 at the left.', orient: 'left', els: [ABT('left', 'Abutment'), ABT('right', 'Abutment')] },
+  { title: 'Square pier, flow right to left', note: '1 at the right nose, clockwise: 3 to 7 along the bottom, 11 to 15 back along the top.', orient: 'left', els: [PIER('square')] },
+  { title: 'Cutwater pier, flow right to left', note: 'Pointed ends, numbered clockwise from the right nose.', orient: 'left', els: [PIER('cutwater')] },
+  { title: 'Two spans with a pier', note: 'Two abutments and a square pier between them.', orient: 'down', els: [ABT('left', 'LM ABT'), PIER('square', 'Pier 1'), ABT('right', 'HM ABT')] }
+];
+
+/* ---------------- bed level change analysis ---------------- */
+const CMP = { prev: { key: 'prev', date: 'previous', name: 'previous', Name: 'Previous' }, pen: { key: 'pen', date: 'penultimate', name: 'penultimate', Name: 'Penultimate' } };
+function comparePoints(s, which) {
+  const items = [];
+  SECTIONS.forEach(sec => s.xs[sec.key].forEach((r, i) => {
+    const cur = levelOf(s, r.reading), oth = r[which];
+    if (cur == null || oth == null) return;
+    items.push({ group: `${sec.chip} cross section`, loc: `${sec.chip} cross section, reading ${r.label}`, short: `${sec.chip} – ${r.label}`, cur, oth, diff: r2(cur - oth), go: { page: 'xs', sec: sec.key } });
+  }));
+  s.elements.forEach((el, ei) => el.radials.forEach(rad => rad.points.forEach(p => {
+    const cur = levelOf(s, p.reading), oth = p[which];
+    if (cur == null || oth == null) return;
+    items.push({ group: `${el.name} radials`, loc: `${el.name} radial ${rad.n}, ${fv(p.d)} m from structure`, short: `${el.name} – ${rad.n} – ${fv(p.d)}m`, cur, oth, diff: r2(cur - oth), go: { page: 'rad', el: ei } });
+  })));
+  return items;
+}
+function summarize(items, thr) {
+  const n = items.length;
+  if (!n) return { n: 0, items, groups: [], flags: [] };
+  const mean = a => a.reduce((x, y) => x + y, 0) / a.length;
+  const byAbs = [...items].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff));
+  const down = items.filter(i => i.diff < 0), up = items.filter(i => i.diff > 0);
+  const groups = [];
+  items.forEach(it => { let g = groups.find(x => x.name === it.group); if (!g) groups.push(g = { name: it.group, items: [] }); g.items.push(it); });
+  groups.forEach(g => { g.n = g.items.length; g.avg = r2(mean(g.items.map(i => i.diff))); g.max = [...g.items].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff))[0]; });
+  const flags = byAbs.filter(i => Math.abs(i.diff) >= thr - 1e-9);
+  const avg = r2(mean(items.map(i => i.diff)));
+  const sameWay = Math.max(down.length, up.length) / n;
+  return {
+    n, items, groups, flags, avg, avgAbs: r2(mean(items.map(i => Math.abs(i.diff)))),
+    max: byAbs[0],
+    maxDown: down.length ? down.reduce((a, b) => b.diff < a.diff ? b : a) : null,
+    maxUp: up.length ? up.reduce((a, b) => b.diff > a.diff ? b : a) : null,
+    nDown: down.length, nUp: up.length,
+    shift: n >= 6 && Math.abs(avg) >= thr * 0.6 && sameWay >= 0.8
+  };
+}
+const dirWord = d => d < 0 ? 'lower' : d > 0 ? 'higher' : 'no change';
+const sgn = v => v == null ? '' : (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(r2(v)).toFixed(2);
+function changeStatements(s, which, sm, thr) {
+  const c = CMP[which], vs = `the ${c.name} exam${s.dates[c.date] ? ' (' + fmtDate(s.dates[c.date]) + ')' : ''}`;
+  if (!sm.n) return { headline: `No points can be compared with ${vs} yet.`, checks: [], report: '' };
+  const m = sm.max;
+  const headline = m.diff === 0
+    ? `No change in bed level at any of the ${sm.n} points compared with ${vs}.`
+    : `Maximum difference from ${vs} is ${Math.abs(m.diff).toFixed(2)} m at ${m.loc}, where the bed is ${Math.abs(m.diff).toFixed(2)} m ${dirWord(m.diff)}.`;
+  const checks = [];
+  const very = sm.flags.filter(f => Math.abs(f.diff) >= thr * 2);
+  if (sm.flags.length) {
+    checks.push({ level: very.length ? 'high' : 'warn', text: `${sm.flags.length} reading${sm.flags.length === 1 ? '' : 's'} differ${sm.flags.length === 1 ? 's' : ''} from ${vs} by ${thr.toFixed(2)} m or more${very.length ? `, including ${very.length} of ${(thr * 2).toFixed(2)} m or more` : ''}. Check ${sm.flags.length === 1 ? 'it' : 'these'} against the site notes before issuing: a misread staff, a sounding taken in a different position, or a wrong datum-to-water figure are common causes.` });
+  }
+  if (sm.shift) checks.push({ level: 'high', text: `${Math.round(Math.max(sm.nDown, sm.nUp) / sm.n * 100)}% of points have moved the same way, with an average change of ${sgn(sm.avg)} m. A consistent shift like this usually means the datum to water level or the datum position differs between exams, rather than real bed movement.` });
+  if (!checks.length) checks.push({ level: 'ok', text: `No reading differs from ${vs} by ${thr.toFixed(2)} m or more.` });
+  const report = m.diff === 0 ? `No change in bed profile from ${c.name} underwater examination.` : `Changes in bed profile were observed. Max ${Math.abs(m.diff).toFixed(1)}m (bed ${dirWord(m.diff)}) at ${m.loc}. Average change ${sgn(sm.avg)}m over ${sm.n} points.`;
+  return { headline, checks, report };
+}
+
+/* ---------------- report pages (Appendix E layout) ---------------- */
+let _tlog = null;
+function T(x, y, t, o = {}) {
+  const a = o.anchor || 'start';
+  if (_tlog && String(t ?? '').trim()) _tlog.push({ x, y, t: String(t), size: o.size || 9, anchor: a });
+  return `<text x="${x}" y="${y}" font-size="${o.size || 9}" text-anchor="${a}"${o.bold ? ' font-weight="bold"' : ''}${o.fill ? ` fill="${o.fill}"` : ''}${o.under ? ' text-decoration="underline"' : ''}>${esc(t)}</text>`;
+}
+function box(x, y, w, h, fill) { return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill || 'none'}" stroke="#000" stroke-width="0.8"/>`; }
+function linesIn(x, y, w, h, lines, size, bold) {
+  const lh = size * 1.18, top = y + h / 2 - (lines.length - 1) * lh / 2 + size * 0.35;
+  return lines.map((l, i) => T(x + w / 2, top + i * lh, l, { size, bold, anchor: 'middle' })).join('');
+}
+function wrap(text, maxChars) {
+  const words = String(text || '').split(/\s+/); const out = []; let cur = '';
+  words.forEach(wd => { if ((cur + ' ' + wd).trim().length > maxChars && cur) { out.push(cur); cur = wd; } else cur = (cur + ' ' + wd).trim(); });
+  if (cur) out.push(cur); return out.length ? out : [''];
+}
+function pageHeader(w, titles, s) {
+  let g = `<image href="${LOGO}" xlink:href="${LOGO}" x="40" y="30" width="118" height="${118 * LOGO_RATIO}"/>`;
+  titles.forEach((t, i) => { g += T(w / 2, 40 + i * 14, t, { size: 11, bold: true, anchor: 'middle' }); });
+  return g;
+}
+function showVal(v, dateSet) { return v == null ? (dateSet ? '' : 'N/A') : String(r2(v)); }
+
+function xsTableSVG(x, y, s, sec, rowH, colW) {
+  const rows = s.xs[sec.key];
+  const [c0, c1, c4] = colW; const W = c0 + c1 * 3 + c4;
+  const h1 = 24, h2 = 13;
+  let g = box(x, y, c0, h1 + h2) + linesIn(x, y, c0, h1 + h2, sec.dist, 7.2);
+  g += box(x + c0, y, c1 * 3, h1) + linesIn(x + c0, y, c1 * 3, h1, wrap(sec.table, 30), 7.4, true);
+  g += box(x + c0 + c1 * 3, y, c4, h1 + h2) + linesIn(x + c0 + c1 * 3, y, c4, h1 + h2, ['Water Level (m)'], 7.2);
+  ['current', 'previous', 'penultimate'].forEach((k, i) => { g += box(x + c0 + c1 * i, y + h1, c1, h2) + linesIn(x + c0 + c1 * i, y + h1, c1, h2, [fmtDate(s.dates[k])], 7); });
+  const wl = waterOf(s);
+  let cy = y + h1 + h2;
+  rows.forEach(r => {
+    const cells = [r.label, fv(levelOf(s, r.reading)), showVal(r.prev, !!s.dates.previous), showVal(r.pen, !!s.dates.penultimate), fv(wl)];
+    const widths = [c0, c1, c1, c1, c4]; let cx = x;
+    cells.forEach((t, i) => { g += box(cx, cy, widths[i], rowH) + linesIn(cx, cy, widths[i], rowH, [t], Math.min(7.6, rowH * .62)); cx += widths[i]; });
+    cy += rowH;
+  });
+  return { g, h: cy - y, w: W };
+}
+function generalBox(x, y, w, s) {
+  let g = '', cy = y;
+  const head = 22;
+  g += box(x, cy, w * 0.42, head) + T(x + 6, cy + 14, 'General Data for structure', { size: 7.6, bold: true });
+  g += box(x + w * 0.42, cy, w * 0.58, head) + T(x + w * 0.71, cy + 15, s.structure || '', { size: 10, bold: true, anchor: 'middle' });
+  cy += head;
+  const body = [];
+  const lab = (l, v, u, d) => body.push([l, v, u, d]);
+  lab('Datum Level:', fv(s.datumLevel), 'm', '');
+  const locLines = wrap(s.datumLocation || '', 44);
+  lab('Datum Position:', locLines[0], '', ''); locLines.slice(1).forEach(l => lab('', l, '', ''));
+  lab('Datum to Water Level:', fv(s.d2w.current), 'm', fmtDate(s.dates.current));
+  lab('Previous Datum to Water Level:', s.d2w.previous == null ? 'N/A' : fv(s.d2w.previous), 'm', fmtDate(s.dates.previous));
+  lab('Penultimate Datum to Water Level:', s.d2w.penultimate == null ? 'N/A' : fv(s.d2w.penultimate), 'm', fmtDate(s.dates.penultimate));
+  const lh = 11, bh = body.length * lh + 14;
+  g += box(x, cy, w, bh);
+  body.forEach((b, i) => {
+    const yy = cy + 14 + i * lh;
+    g += T(x + w * 0.44, yy, b[0], { size: 7.2, bold: true, anchor: 'end' });
+    g += T(x + w * 0.47, yy, b[1], { size: 7.2 });
+    if (b[2]) g += T(x + w * 0.62, yy, b[2], { size: 7.2 });
+    if (b[3]) g += T(x + w * 0.72, yy, b[3], { size: 7.2 });
+  });
+  cy += bh;
+  const nh = 48;
+  g += box(x, cy, w, nh);
+  g += T(x + 22, cy + 14, 'Notes', { size: 7.4, bold: true }) + T(x + 52, cy + 14, '1', { size: 7.4, bold: true }) + T(x + 62, cy + 14, 'U/S = Upstream', { size: 7.2 });
+  g += T(x + 52, cy + 26, '2', { size: 7.4, bold: true }) + T(x + 62, cy + 26, 'D/S = Downstream', { size: 7.2 });
+  g += T(x + 52, cy + 38, '3', { size: 7.4, bold: true }) + T(x + 62, cy + 38, 'All levels are relative to arbitrary datum above', { size: 7.2 });
+  cy += nh;
+  return { g, h: cy - y };
+}
+function tablesPage(s, p) {
+  const { w, h } = p;
+  let g = pageHeader(w, ['APPENDIX E – RIVERBED SOUNDINGS', 'BRIDGE STRUCTURE UNDERWATER EXAMINATION REPORT', 'TABULATED CROSS SECTION LEVELS'], s);
+  const colW = [74, 44, 56]; const tw = colW[0] + colW[1] * 3 + colW[2];
+  const xL = 34, xM = (w - 300) / 2, xR = w - 34 - tw;
+  const topRows = Math.max(s.xs.us30.length, s.xs.ds30.length), botRows = Math.max(s.xs.usFace.length, s.xs.centre.length, s.xs.dsFace.length);
+  const avail = h - 110 - 60 - 2 * 37 - 40;
+  const rowH = Math.max(7.5, Math.min(13, avail / Math.max(1, topRows + botRows)));
+  const y0 = 100;
+  const a = xsTableSVG(xL, y0, s, SECTIONS[0], rowH, colW);
+  const gen = generalBox(xM, y0, 300, s);
+  const b = xsTableSVG(xR, y0, s, SECTIONS[4], rowH, colW);
+  g += a.g + gen.g + b.g;
+  const y1 = y0 + Math.max(a.h, gen.h, b.h) + 34;
+  g += xsTableSVG(xL, y1, s, SECTIONS[1], rowH, colW).g;
+  g += xsTableSVG((w - tw) / 2, y1, s, SECTIONS[2], rowH, colW).g;
+  g += xsTableSVG(xR, y1, s, SECTIONS[3], rowH, colW).g;
+  return g;
+}
+function embed(svg, x, y, w, h) {
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1];
+  const inner = svg.replace(/^<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
+  return `<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}" preserveAspectRatio="xMidYMid meet">${inner}</svg>`;
+}
+function xsPage(s, sec, p) {
+  const { w, h } = p;
+  let g = pageHeader(w, ['BRIDGE STRUCTURE UNDERWATER EXAMINATION REPORT', sec.plot], s);
+  g += T(w / 2, 104, s.structure || '', { size: 12, bold: true, anchor: 'middle' });
+  const chart = xsChartFor(s, sec.key, { w: 1040, h: 620, fs: 12 });
+  g += embed(chart, 40, 116, w - 80, 620);
+  return g;
+}
+function sketchPage(s, p) {
+  const { w, h } = p;
+  let g = T(w / 2, 58, 'RADIALS SKETCH', { size: 12, bold: true, anchor: 'middle' });
+  g += `<image href="${LOGO}" xlink:href="${LOGO}" x="40" y="40" width="100" height="${100 * LOGO_RATIO}"/>`;
+  g += T(w / 2, 100, s.structure || '', { size: 11, bold: true, anchor: 'middle', under: true });
+  const { g: sg, vb } = sketchSVG(sketchGeometry(s.elements, s.sketchOrient), { raw: true, pad: 20 });
+  g += `<svg x="60" y="130" width="${w - 120}" height="640" viewBox="${vb.join(' ')}" preserveAspectRatio="xMidYMid meet">${sg}</svg>`;
+  g += T(70, 840, 'Datum:', { size: 11 }) + T(130, 840, s.datumLocation || '', { size: 11 });
+  return g;
+}
+function radialTableSVG(x, y, s, el, rad) {
+  const cw = [74, 62, 62, 62]; let g = '';
+  g += box(x, y, cw[0], 20) + linesIn(x, y, cw[0], 20, [el.name], 7.6);
+  g += box(x + cw[0], y, cw[1] * 3, 20) + linesIn(x + cw[0], y, cw[1] * 3, 20, ['Radial ' + rad.n], 11);
+  g += box(x, y + 20, cw[0], 36) + linesIn(x, y + 20, cw[0], 36, ['Distance from', 'Structure (m)'], 7.2);
+  ['current', 'previous', 'penultimate'].forEach((k, i) => { g += box(x + cw[0] + cw[1] * i, y + 20, cw[1], 36) + linesIn(x + cw[0] + cw[1] * i, y + 20, cw[1], 36, [fmtDate(s.dates[k])], 7.2); });
+  let cy = y + 56;
+  rad.points.forEach(pt => {
+    const cells = [fv(pt.d), fv(levelOf(s, pt.reading)), showVal(pt.prev, !!s.dates.previous), showVal(pt.pen, !!s.dates.penultimate)];
+    let cx = x; cells.forEach((t, i) => { g += box(cx, cy, cw[i], 15) + linesIn(cx, cy, cw[i], 15, [t], 7.4); cx += cw[i]; }); cy += 15;
+  });
+  return { g, h: cy - y };
+}
+function keyBox(x, y, s) {
+  const items = [
+    ['Current Water Level', '#2E86DE', ''],
+    ['Bed Level', COL.cur, fmtDate(s.dates.current)],
+    ['Previous Bed Level', COL.prevRad, fmtDate(s.dates.previous)],
+    ['Penultimate Bed Level', '#9BBB59', fmtDate(s.dates.penultimate)]
+  ];
+  let g = box(x, y, 260, 24 + items.length * 14) + T(x + 92, y + 14, 'KEY:', { size: 7.6, bold: true });
+  items.forEach((it, i) => { const yy = y + 28 + i * 14; g += `<line x1="${x + 18}" y1="${yy - 3}" x2="${x + 46}" y2="${yy - 3}" stroke="${it[1]}" stroke-width="1.6"/>` + T(x + 62, yy, it[0], { size: 7.2 }) + T(x + 192, yy, it[2], { size: 7.2 }); });
+  return g;
+}
+function radialPage(s, el, rads, p) {
+  const { w } = p;
+  let g = T(w / 2, 58, 'RADIAL SOUNDINGS', { size: 12, bold: true, anchor: 'middle' });
+  g += `<image href="${LOGO}" xlink:href="${LOGO}" x="40" y="40" width="100" height="${100 * LOGO_RATIO}"/>`;
+  g += T(60, 100, s.structure || '', { size: 10, bold: true, under: true });
+  let lastBottom = 0;
+  rads.forEach((rad, i) => {
+    const y0 = 122 + i * 285;
+    const t = radialTableSVG(60, y0, s, el, rad);
+    g += t.g;
+    g += `<rect x="364" y="${y0}" width="372" height="250" fill="none" stroke="#999" stroke-width=".8"/>`;
+    g += embed(radialChartFor(s, rad, { w: 520, h: 345, fs: 13 }), 368, y0 + 4, 364, 242);
+    lastBottom = y0 + Math.max(t.h, 0);
+  });
+  g += keyBox(60, lastBottom + 28, s);
+  return g;
+}
+function changePage(s, which, p) {
+  const { w, h } = p, c = CMP[which], thr = s.checkThreshold > 0 ? s.checkThreshold : 0.75;
+  const sm = summarize(comparePoints(s, which), thr), st = changeStatements(s, which, sm, thr);
+  let g = `<image href="${LOGO}" xlink:href="${LOGO}" x="40" y="30" width="118" height="${118 * LOGO_RATIO}"/>`;
+  g += T(w / 2, 40, 'BRIDGE STRUCTURE UNDERWATER EXAMINATION REPORT', { size: 11, bold: true, anchor: 'middle' });
+  g += T(w / 2, 54, `BED LEVEL CHANGES – CURRENT VS ${c.name.toUpperCase()} EXAM`, { size: 11, bold: true, anchor: 'middle' });
+  g += T(w / 2, 84, s.structure || '', { size: 12, bold: true, anchor: 'middle' });
+  g += T(w / 2, 100, `Current ${fmtDate(s.dates.current)} compared with ${c.name} ${fmtDate(s.dates[c.date]) || '(no date)'}  ·  difference = current − ${c.name} bed level (negative = bed lower)`, { size: 9, anchor: 'middle', fill: '#444' });
+  const x0 = 40, W = w - 80;
+  if (!sm.n) { g += T(w / 2, 200, 'No points have both a current and a ' + c.name + ' level to compare.', { size: 11, anchor: 'middle' }); return g; }
+  // summary tiles
+  const tiles = [
+    ['Maximum difference', `${Math.abs(sm.max.diff).toFixed(2)} m ${sm.max.diff ? '(' + dirWord(sm.max.diff) + ')' : ''}`, sm.max.loc],
+    ['Average change', `${sgn(sm.avg)} m`, `mean size ${sm.avgAbs.toFixed(2)} m over ${sm.n} points`],
+    ['Largest drop', sm.maxDown ? `${sgn(sm.maxDown.diff)} m` : 'none', sm.maxDown ? sm.maxDown.loc : ''],
+    ['Largest rise', sm.maxUp ? `${sgn(sm.maxUp.diff)} m` : 'none', sm.maxUp ? sm.maxUp.loc : '']
+  ];
+  const tw = (W - 30) / 4; let y = 116;
+  tiles.forEach((t, i) => {
+    const x = x0 + i * (tw + 10);
+    g += `<rect x="${x}" y="${y}" width="${tw}" height="64" fill="#F3F7FA" stroke="#9AA9B6" stroke-width=".8"/>`;
+    g += T(x + 10, y + 16, t[0], { size: 8.5, fill: '#444' }) + T(x + 10, y + 37, t[1], { size: 15, bold: true, fill: '#004578' });
+    wrap(t[2], 46).slice(0, 2).forEach((l, k) => { g += T(x + 10, y + 50 + k * 10, l, { size: 8 }); });
+  });
+  y += 84;
+  // statements
+  g += T(x0, y, 'Summary', { size: 10, bold: true }); y += 14;
+  wrap(st.headline, 190).forEach(l => { g += T(x0, y, l, { size: 9 }); y += 12; });
+  y += 4;
+  st.checks.forEach(k => {
+    const col = k.level === 'ok' ? '#0B6B33' : k.level === 'high' ? '#A1261A' : '#8A5300';
+    const lines = wrap(k.text, 185);
+    g += `<rect x="${x0}" y="${y - 10}" width="4" height="${lines.length * 12 + 14}" fill="${col}"/>`;
+    g += T(x0 + 12, y, k.level === 'ok' ? 'No large differences' : k.level === 'high' ? 'Check before issuing' : 'Worth a second look', { size: 9, bold: true, fill: col }); y += 12;
+    lines.forEach(l => { g += T(x0 + 12, y, l, { size: 9 }); y += 12; });
+    y += 8;
+  });
+  // two tables: flagged readings | by section
+  const tableY = y + 8, colW = (W - 30) / 2;
+  const tbl = (x, title, heads, widths, rows, more) => {
+    let out = T(x, tableY, title, { size: 10, bold: true }), yy = tableY + 8, cx = x;
+    heads.forEach((hd, i) => { out += box(cx, yy, widths[i], 16, '#004578') + T(cx + (i ? widths[i] - 5 : 5), yy + 11, hd, { size: 7.6, bold: true, fill: '#fff', anchor: i ? 'end' : 'start' }); cx += widths[i]; });
+    yy += 16;
+    rows.forEach(r => { cx = x; r.forEach((v, i) => { out += box(cx, yy, widths[i], 14) + T(cx + (i ? widths[i] - 5 : 5), yy + 10, v, { size: 7.6, anchor: i ? 'end' : 'start', fill: (i === 3 && String(v).startsWith('−')) ? '#A1261A' : '#000' }); cx += widths[i]; }); yy += 14; });
+    if (!rows.length) out += T(x + 5, yy + 12, 'None', { size: 8 });
+    if (more) out += T(x + 5, yy + 12, more, { size: 8, fill: '#444' });
+    return out;
+  };
+  const maxRows = Math.max(3, Math.floor((h - 70 - tableY - 26) / 14));
+  const fl = sm.flags.slice(0, maxRows).map(f => [f.loc, fv(f.cur), fv(f.oth), sgn(f.diff), Math.abs(f.diff) >= thr * 2 ? 'Very large' : 'Large']);
+  g += tbl(x0, `Readings differing by ${thr.toFixed(2)} m or more`, ['Reading', 'Current', c.Name, 'Diff (m)', 'Flag'], [colW - 230, 50, 60, 55, 65], fl, sm.flags.length > maxRows ? `and ${sm.flags.length - maxRows} more` : '');
+  const gr = sm.groups.slice(0, maxRows).map(gp => [gp.name, String(gp.n), sgn(gp.avg), sgn(gp.max.diff), gp.max.short]);
+  g += tbl(x0 + colW + 30, 'By section and element', ['Section', 'Points', 'Average (m)', 'Max (m)', 'Max at'], [colW - 290, 45, 70, 60, 115], gr, '');
+  return g;
+}
+function reportPages(s) {
+  const defs = [{ o: 'l', draw: p => tablesPage(s, p), label: 'Tabulated cross-section levels' }];
+  SECTIONS.forEach(sec => defs.push({ o: 'l', draw: p => xsPage(s, sec, p), label: sec.name + ' plot' }));
+  defs.push({ o: 'p', draw: p => sketchPage(s, p), label: 'Radials sketch' });
+  s.elements.forEach(el => {
+    for (let i = 0; i < el.radials.length; i += 3) {
+      const chunk = el.radials.slice(i, i + 3);
+      defs.push({ o: 'p', draw: p => radialPage(s, el, chunk, p), label: `${el.name} radials ${chunk[0].n}–${chunk[chunk.length - 1].n}` });
+    }
+  });
+  defs.push({ o: 'l', draw: p => changePage(s, 'prev', p), label: 'Bed level changes vs previous' });
+  defs.push({ o: 'l', draw: p => changePage(s, 'pen', p), label: 'Bed level changes vs penultimate' });
+  const total = defs.length;
+  return defs.map((d, i) => {
+    const [w, h] = d.o === 'l' ? [1123, 794] : [794, 1123];
+    _tlog = [];
+    const body = d.draw({ w, h, i, total });
+    const texts = _tlog; _tlog = null;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" font-family="${FONT}"><rect width="${w}" height="${h}" fill="#fff"/>${body}${T(w - 40, h - 26, `Page ${i + 1} of ${total}`, { size: 9, anchor: 'end', fill: '#555' })}${T(40, h - 26, 'Aureos', { size: 9, fill: '#555' })}</svg>`;
+    return { w, h, o: d.o, label: d.label, svg, texts };
+  });
+}
+
+/* ---------------- read an Appendix E report back from PDF text ----------------
+   pages: [{ w, h, items: [{ s, x, y, w }] }] with y measured from the top of the page. */
+const DATE_RE = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+const NUM_RE = /^-?\d+(?:[.,]\d+)?$/;
+function pdfDateISO(t) {
+  const m = String(t).match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/); if (!m) return '';
+  const y = m[3].length === 2 ? (+m[3] > 70 ? '19' : '20') + m[3] : m[3];
+  return `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+}
+function tokenizePage(pg) {
+  const out = [];
+  pg.items.forEach(it => {
+    const s = String(it.s || '').trim(); if (!s) return;
+    const parts = s.split(/\s+/);
+    if (parts.length > 1 && parts.every(p => NUM_RE.test(p) || DATE_RE.test(p) || p === 'N/A')) {
+      let off = 0; const L = s.length;
+      parts.forEach(p => { const i = s.indexOf(p, off); const x = it.x + it.w * (i / L), w = it.w * (p.length / L); out.push({ s: p, x, y: it.y, w, cx: x + w / 2 }); off = i + p.length; });
+    } else out.push({ s, x: it.x, y: it.y, w: it.w, cx: it.x + it.w / 2 });
+  });
+  out.sort((a, b) => a.y - b.y || a.x - b.x);
+  const lines = []; const tol = 1.5;
+  out.forEach(t => { const l = lines[lines.length - 1]; if (l && Math.abs(t.y - l.y) <= tol) l.items.push(t); else lines.push({ y: t.y, items: [t] }); });
+  lines.forEach(l => l.items.sort((a, b) => a.x - b.x));
+  return lines;
+}
+function classifyTitle(t) {
+  if (/30\s*m\s*U\s*\/?\s*S/i.test(t)) return 'us30';
+  if (/30\s*m\s*D\s*\/?\s*S/i.test(t)) return 'ds30';
+  if (/U\s*\/?\s*S\s*Face/i.test(t)) return 'usFace';
+  if (/Centre\s*line|Center\s*line/i.test(t)) return 'centre';
+  if (/D\s*\/?\s*S\s*Face/i.test(t)) return 'dsFace';
+  return null;
+}
+function parseReportText(pages) {
+  const res = { structure: '', datumLevel: null, datumLocation: '', dates: null, d2w: [], xs: {}, radials: [] };
+  let anyTables = 0;
+  pages.forEach(pg => {
+    const lines = tokenizePage(pg);
+    const all = lines.flatMap(l => l.items);
+    if (!res.structure) { const st = all.find(t => /\d+\s*mls\s*\d+\s*yds/i.test(t.s)); if (st) res.structure = st.s.trim(); }
+    // date-header triples => tables
+    const tables = [];
+    lines.forEach(l => {
+      const ds = l.items.filter(t => DATE_RE.test(t.s));
+      for (let i = 0; i + 2 < ds.length; i++) {
+        const g1 = ds[i + 1].cx - ds[i].cx, g2 = ds[i + 2].cx - ds[i + 1].cx;
+        if (g1 > 0 && g2 > 0 && g2 / g1 > 0.6 && g2 / g1 < 1.6 && g1 < pg.w * 0.12) {
+          tables.push({ y: l.y, c: [ds[i].cx, ds[i + 1].cx, ds[i + 2].cx], s: (g1 + g2) / 2, dates: [ds[i].s, ds[i + 1].s, ds[i + 2].s] });
+          i += 2;
+        }
+      }
+    });
+    const tripleLineYs = new Set(tables.map(t => t.y));
+    tables.forEach((tb, ti) => {
+      const lo = tb.c[0] - 2.6 * tb.s, hi = tb.c[2] + 0.6 * tb.s, labMax = tb.c[0] - 0.55 * tb.s;
+      const inX = t => t.cx >= lo && t.cx <= tb.c[2] + 1.8 * tb.s;
+      const title = lines.filter(l => l.y < tb.y - 0.5 && l.y > tb.y - 45).flatMap(l => l.items.filter(inX)).map(t => t.s).join(' ');
+      const next = tables.filter((o, j) => j !== ti && o.y > tb.y + 2 && Math.abs(o.c[0] - tb.c[0]) < tb.s * 1.5).map(o => o.y);
+      const stopY = next.length ? Math.min(...next) - 0.5 : Infinity;
+      const rows = [];
+      lines.forEach(l => {
+        if (l.y <= tb.y + 1 || l.y >= stopY) return;
+        let labT = l.items.filter(t => t.cx < labMax && t.cx >= lo).map(t => t.s);
+        if (labT.length > 1 && NUM_RE.test(labT[0]) && !NUM_RE.test(labT[labT.length - 1])) labT = labT.slice(1);
+        const lab = labT.join(' ').trim();
+        const vals = [null, null, null]; let nv = 0;
+        l.items.forEach(t => {
+          if (t.cx < tb.c[0] - 0.55 * tb.s || t.cx > hi) return;
+          if (!NUM_RE.test(t.s)) return;
+          let best = -1, bd = Infinity; tb.c.forEach((c, j) => { const d = Math.abs(t.cx - c); if (d < bd) { bd = d; best = j; } });
+          if (bd < 0.5 * tb.s && vals[best] == null) { vals[best] = num(t.s); nv++; }
+        });
+        if (lab && nv && !/distance|structure|water|key/i.test(lab)) rows.push({ label: lab, cur: vals[0], prev: vals[1], pen: vals[2] });
+      });
+      if (!rows.length) return;
+      anyTables++;
+      if (!res.dates) res.dates = tb.dates.map(pdfDateISO);
+      const key = classifyTitle(title);
+      if (key) { res.xs[key] = rows; return; }
+      const above = lines.filter(l => l.y < tb.y - 0.5 && l.y > tb.y - 45).sort((a, b) => b.y - a.y);
+      let name = '', rn = null;
+      for (const l of above) {
+        if (!name) { const nm = l.items.filter(t => t.cx < labMax && t.cx >= lo - tb.s && !/distance|structure/i.test(t.s)).map(t => t.s).join(' ').trim(); if (nm) name = nm; }
+        if (rn == null) { const r = l.items.find(t => /Radial\s*\d+/i.test(t.s) && t.cx >= lo && t.cx <= tb.c[2] + tb.s); if (r) rn = +r.s.match(/Radial\s*(\d+)/i)[1]; }
+      }
+      name = name || 'Element';
+      const rm = rn != null ? [null, rn] : null;
+      if (rows.every(r => NUM_RE.test(r.label))) res.radials.push({ name, n: rm ? +rm[1] : null, points: rows.map(r => ({ d: num(r.label), cur: r.cur, prev: r.prev, pen: r.pen })) });
+    });
+    // general data: datum level, position, datum-to-water rows ("1.7 m 19/08/26")
+    lines.forEach(l => {
+      const it = l.items;
+      it.forEach((t, i) => {
+        if (/Datum Level/i.test(t.s) && res.datumLevel == null) { const n = it.slice(i + 1).find(u => NUM_RE.test(u.s) && u.x - t.x < pg.w * 0.12); if (n) res.datumLevel = num(n.s); }
+        if (/Datum Position/i.test(t.s) && !res.datumLocation) res.datumLocation = it.slice(i + 1).filter(u => u.x > t.x && u.x - t.x < pg.w * 0.16).map(u => u.s).join(' ').trim();
+      });
+      if (tripleLineYs.has(l.y)) return;
+      it.forEach((t, i) => {
+        if (!DATE_RE.test(t.s)) return;
+        for (let j = i - 1; j >= 0 && t.x - it[j].x < pg.w * 0.08; j--) {
+          if (NUM_RE.test(it[j].s)) { if (it.slice(j + 1, i).every(u => /^m$/i.test(u.s))) res.d2w.push({ v: num(it[j].s), date: pdfDateISO(t.s) }); break; }
+          if (!/^m$/i.test(it[j].s)) break;
+        }
+      });
+    });
+  });
+  if (!anyTables) throw new Error('No Appendix E sounding tables were found in this PDF. Use the report that contains the tabulated cross sections and radial soundings.');
+  // assemble a "previous exam" in app shape; levels kept as-is (already on the report datum)
+  const s = blankState();
+  s.structure = res.structure; s.datumLevel = res.datumLevel ?? 10; s.datumLocation = res.datumLocation;
+  const dts = res.dates || ['', '', ''];
+  s.dates = { current: dts[0], previous: dts[1], penultimate: dts[2] };
+  const d2wFor = (iso, idx) => { const m = res.d2w.find(x => x.date === iso); return m ? m.v : (res.d2w[idx] ? res.d2w[idx].v : null); };
+  s.d2w = { current: d2wFor(dts[0], 0), previous: d2wFor(dts[1], 1), penultimate: d2wFor(dts[2], 2) };
+  SECTIONS.forEach(sec => { if (res.xs[sec.key]) s.xs[sec.key] = res.xs[sec.key].map(r => ({ label: r.label, reading: null, _level: r.cur, prev: r.prev, pen: r.pen })); else s.xs[sec.key] = []; });
+  const byName = new Map();
+  res.radials.forEach(r => {
+    const k = r.name.toUpperCase();
+    if (!byName.has(k)) byName.set(k, { id: newId(), name: r.name, type: /PIER/i.test(r.name) ? 'pier' : /CYL/i.test(r.name) ? 'cylinder' : 'abutment', side: /^(US|HM|RIGHT)/i.test(r.name) ? 'right' : 'left', shape: 'square', radials: [] });
+    const el = byName.get(k);
+    const n = r.n ?? (el.radials.length ? Math.max(...el.radials.map(x => x.n)) + 1 : 1);
+    el.radials = el.radials.filter(x => x.n !== n);
+    el.radials.push({ n, points: r.points.map(p => ({ d: p.d, reading: null, _level: p.cur, prev: p.prev, pen: p.pen })) });
+    el.radials.sort((a, b) => a.n - b.n);
+  });
+  s.elements = [...byName.values()];
+  s._fromPdf = true;
+  return s;
+}
+async function readPdfPages(file) {
+  await loadScript(LIBS.pdfworker);
+  await loadScript(LIBS.pdfjs);
+  const lib = window.pdfjsLib;
+  lib.GlobalWorkerOptions.workerSrc = LIBS.pdfworker;
+  const doc = await lib.getDocument({ data: new Uint8Array(await file.arrayBuffer()), isEvalSupported: false, disableFontFace: true }).promise;
+  const pages = [];
+  for (let i = 1; i <= doc.numPages; i++) {
+    $('#busyMsg').textContent = `Reading page ${i} of ${doc.numPages}…`;
+    const p = await doc.getPage(i); const vp = p.getViewport({ scale: 1 }); const tc = await p.getTextContent();
+    const text = tc.items.map(t => t.str).join(' ');
+    if (!/\d{1,2}\/\d{1,2}\/\d{2}/.test(text)) { p.cleanup(); continue; }
+    pages.push({ w: vp.width, h: vp.height, items: tc.items.map(t => { const [x, y] = vp.convertToViewportPoint(t.transform[4], t.transform[5]); return { s: t.str, x, y, w: t.width }; }) });
+    p.cleanup();
+  }
+  doc.destroy();
+  return pages;
+}
+
+/* ---------------- app state + persistence ---------------- */
+const STORE_KEY = 'aureos-uw-soundings-v1';
+let state = blankState();
+const ui = { page: 'site', sec: 'us30', el: 0, cmp: 'prev' };
+try { const raw = localStorage.getItem(STORE_KEY); if (raw) { const o = JSON.parse(raw); state = normalize(o.state); Object.assign(ui, o.ui || {}); } } catch (e) { /* storage unavailable or empty */ }
+let saveTimer = null;
+function persist() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => { try { localStorage.setItem(STORE_KEY, JSON.stringify({ state, ui })); } catch (e) { } }, 300);
+}
+
+const ICON = {
+  site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M4 20V11a8 8 0 0 1 16 0v9"/><path d="M8 20v-6a4 4 0 0 1 8 0v6"/></svg>',
+  xs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6h20"/><path d="M3 9l3 7 4 2 5-1 4-4 2-4"/><circle cx="6" cy="16" r="1"/><circle cx="15" cy="17" r="1"/></svg>',
+  rad: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 3v18"/><path d="M6 6h12M6 10h12M6 14h12M6 18h12" stroke-dasharray="2 2.4"/><path d="M6 3l9-1M6 21l9 1" stroke-dasharray="2 2.4"/></svg>',
+  sketch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="5" width="6" height="14" rx="1"/><path d="M12 5V1M12 23v-4M15 8h6M15 12h6M15 16h6M3 8h6M3 12h6M3 16h6"/></svg>',
+  chg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M7 16V9M12 16V5M17 16v-4"/><path d="m15 6 2-2 2 2"/></svg>',
+  report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 17l2.5-3 2 2 3.5-4"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>'
+};
+const PAGES = [
+  { id: 'site', name: 'Site details', short: 'Site', icon: ICON.site },
+  { id: 'xs', name: 'Cross sections', short: 'Sections', icon: ICON.xs },
+  { id: 'rad', name: 'Radials', short: 'Radials', icon: ICON.rad },
+  { id: 'chg', name: 'Changes', short: 'Changes', icon: ICON.chg },
+  { id: 'sketch', name: 'Sketches', short: 'Sketches', icon: ICON.sketch },
+  { id: 'report', name: 'Report', short: 'Report', icon: ICON.report }
+];
+
+/* in-app confirmation (browser confirm() is blocked inside the hosted app) */
+function askConfirm(title, body, okLabel) {
+  return new Promise(resolve => {
+    const d = $('#confirm');
+    $('#cfTitle').textContent = title; $('#cfBody').textContent = body || ''; $('#cfOk').textContent = okLabel || 'Confirm';
+    const prevFocus = document.activeElement;
+    const done = v => { d.classList.remove('on'); document.removeEventListener('keydown', key, true); d.onclick = null; if (prevFocus && prevFocus.focus) prevFocus.focus(); resolve(v); };
+    const key = e => { if (e.key === 'Escape') { e.preventDefault(); done(false); } };
+    d.onclick = e => { if (e.target === d || e.target.closest('#cfCancel')) done(false); else if (e.target.closest('#cfOk')) done(true); };
+    document.addEventListener('keydown', key, true);
+    d.classList.add('on'); $('#cfCancel').focus();
+  });
+}
+function toast(msg, err) {
+  const t = $('#toast'); t.textContent = msg; t.classList.toggle('err', !!err); t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), err ? 6000 : 3800);
+}
+function busy(on, msg) { $('#busy').classList.toggle('on', on); if (msg) $('#busyMsg').textContent = msg; }
+
+/* ---------------- rendering ---------------- */
+function renderTabs() {
+  $('#tabs').innerHTML = PAGES.map(p => `<button class="tab" data-act="page" data-v="${p.id}" ${ui.page === p.id ? 'aria-current="page"' : ''}>${p.icon}<span class="full">${innerWidth <= 760 ? p.short : p.name}</span></button>`).join('');
+  $('#hdrStruct').textContent = state.structure || 'New exam';
+}
+function render() {
+  renderTabs();
+  const m = $('#main');
+  if (ui.page === 'site') m.innerHTML = pageSite();
+  else if (ui.page === 'xs') m.innerHTML = pageXS();
+  else if (ui.page === 'rad') m.innerHTML = pageRad();
+  else if (ui.page === 'chg') m.innerHTML = pageChanges();
+  else if (ui.page === 'sketch') m.innerHTML = pageSketch();
+  else m.innerHTML = pageReport();
+  refresh();
+}
+const numInput = (bind, v, cls = '', extra = '') => `<input class="${cls}" type="text" inputmode="decimal" autocomplete="off" data-bind="${bind}" data-kind="num" value="${esc(fv(v))}" ${extra}>`;
+const dateCols = () => ({ c: fmtDate(state.dates.current) || 'no date', p: fmtDate(state.dates.previous) || 'no date', q: fmtDate(state.dates.penultimate) || 'no date' });
+
+function pageSite() {
+  const s = state;
+  const row = (k, name) => `<tr><td>${name}</td><td data-l="Exam date"><input class="inp" type="date" data-bind="dates.${k}" data-kind="text" value="${esc(s.dates[k])}"></td><td data-l="Datum to water (m)">${numInput('d2w.' + k, s.d2w[k], 'inp', 'placeholder="m"')}</td><td class="wlv" data-l="Water level (m)" data-calc="water:${k}">${fv(waterOf(s, k))}</td></tr>`;
+  return `
+  <div class="page-head"><div><h1>Site details</h1><p>Enter readings exactly as taken on site. The app converts each one to a bed level on the report datum, so this exam lines up with the previous reports.</p></div></div>
+  <div class="grid2">
+    <section class="card">
+      <h2>Structure and datum</h2>
+      <label class="fld"><span>Structure ELR and number</span><input data-bind="structure" data-kind="text" data-live="hdr" value="${esc(s.structure)}" placeholder="e.g. DOW 014mls 0176yds Str.24A"></label>
+      <div class="row2">
+        <label class="fld"><span>Datum level (m)</span>${numInput('datumLevel', s.datumLevel)}</label>
+        <div class="fld"><span>Datum basis</span><small style="font-size:.9rem;line-height:1.35">Arbitrary datum used by previous reports. Keep it the same each exam so levels line up.</small></div>
+      </div>
+      <label class="fld"><span>Location of datum</span><input data-bind="datumLocation" data-kind="text" value="${esc(s.datumLocation)}" placeholder="e.g. Located to: Underside of downstream crown"></label>
+    </section>
+    <section class="card">
+      <h2>Exams and water level</h2>
+      <table class="mini stack"><thead><tr><th></th><th>Exam date</th><th>Datum to water (m)</th><th style="text-align:right">Water level</th></tr></thead>
+      <tbody>${row('current', 'Current')}${row('previous', 'Previous')}${row('penultimate', 'Penultimate')}</tbody></table>
+      <div class="wl" style="margin-top:14px"><span>Current water level</span><b data-calc="water:current">${fv(waterOf(s)) || '–'}</b><span class="muted">m</span></div>
+      <p class="muted" style="font-size:.88rem;margin-top:12px">Bed level = datum level − datum to water − site reading. Readings are depths below the water surface; bank readings above water are negative.</p>
+    </section>
+    <section class="card">
+      <h2>Bring in last exam</h2>
+      <div class="drop" data-act="import-prev" data-drop="prev" tabindex="0" role="button"><strong>Import previous data</strong>Drop last exam's file here, or choose one. Accepts the PDF report, this app's .json or .xlsx, or the underwater Excel template.</div>
+      <ul class="flow-list">
+        <li><b>Its current</b><span class="arr">→</span><span>Previous column, date and datum to water</span></li>
+        <li><b>Its previous</b><span class="arr">→</span><span>Penultimate column, date and datum to water</span></li>
+        <li><b>PDF reports</b><span class="arr">→</span><span>levels read from the Appendix E tables, already on the report datum</span></li>
+        <li><b>Matching</b><span class="arr">→</span><span>by point label, element name, radial number and distance</span></li>
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Start a different exam</h2>
+      <p class="muted" style="margin-bottom:14px">Your work is kept in this browser as you go. Save a .json copy to keep it safe or carry it to another device.</p>
+      <div class="tbl-actions">
+        <button class="btn" data-act="open">Open saved exam</button>
+        <button class="btn" data-act="new">New blank exam</button>
+        <button class="btn ghost" data-act="example">Load DOW 24A example</button>
+      </div>
+    </section>
+  </div>`;
+}
+
+function pageXS() {
+  const s = state, sec = SECTIONS.find(x => x.key === ui.sec) || SECTIONS[0], rows = s.xs[sec.key], d = dateCols();
+  const body = rows.map((r, i) => {
+    const base = `xs.${sec.key}.${i}`;
+    const cur = `<td>${numInput(base + '.reading', r.reading, '', 'data-col="1"')}</td><td class="calc" data-calc="lvl:${base}">${fv(levelOf(s, r.reading))}</td>`;
+    return `<tr><td><input class="lab" data-bind="${base}.label" data-kind="text" data-col="0" value="${esc(r.label)}"></td>${cur}<td class="pv">${numInput(base + '.prev', r.prev, '', 'data-col="3"')}</td><td class="pv">${numInput(base + '.pen', r.pen, '', 'data-col="4"')}</td><td class="x"><button class="icon" data-act="del-row" data-i="${i}" aria-label="Remove ${esc(r.label)}">${ICON.x}</button></td></tr>`;
+  }).join('');
+  return `
+  <div class="page-head"><div><h1>Cross sections</h1><p>Enter the site readings across the watercourse. Each is converted to a bed level on the report datum and plotted against the previous exams.</p></div></div>
+  ${noWaterNote()}
+  <div class="chips" role="tablist">${SECTIONS.map(x => `<button class="chip" data-act="sec" data-v="${x.key}" aria-pressed="${x.key === sec.key}">${x.chip}</button>`).join('')}</div>
+  <div class="xs-layout">
+    <section class="card">
+      <div class="card-head"><h2>${esc(sec.name)}</h2><span class="muted">Water level <b data-calc="water:current">${fv(waterOf(s)) || '–'}</b> m</span></div>
+      <div class="tbl-wrap"><table class="data"><thead><tr>
+        <th>Point</th><th>Reading<span class="hide-sm"> (m)</span><small>${d.c}</small></th><th>Bed level<small>converted</small></th><th>Prev<span class="hide-sm">ious</span><small>${d.p}</small></th><th>Pen<span class="hide-sm">ultimate</span><small>${d.q}</small></th><th></th>
+      </tr></thead><tbody>${body}</tbody></table></div>
+      <div class="tbl-actions"><button class="btn sm" data-act="add-row">${ICON.plus.replace('<svg', '<svg width="16" height="16"')}Add point</button><span class="muted" style="font-size:.85rem">Enter moves down a column. Commas work as decimal points.</span></div>
+      <div class="legend-note"><span><i style="background:var(--accent-soft);border:1px solid var(--accent)"></i>Calculated</span><span><i style="background:var(--prev);border:1px solid var(--line)"></i>From previous exams</span></div>
+    </section>
+    <section class="paper" data-chart="xs:${sec.key}" aria-label="${esc(sec.name)} graph"></section>
+  </div>`;
+}
+
+function pageRad() {
+  const s = state;
+  if (ui.el >= s.elements.length) ui.el = Math.max(0, s.elements.length - 1);
+  const chips = s.elements.map((e, i) => `<button class="chip" data-act="el" data-v="${i}" aria-pressed="${i === ui.el}">${esc(e.name)}<span class="cnt">${e.radials.length}</span></button>`).join('');
+  const addChip = `<select class="chip add" data-act="add-el" aria-label="Add an element"><option value="">+ Add element</option><option value="abutment">Abutment (9 radials)</option><option value="pier">Pier (16 radials)</option><option value="cylinder">Cylinder (4 radials)</option></select>`;
+  if (!s.elements.length) return `<div class="page-head"><div><h1>Radials</h1></div></div><div class="chips">${addChip}</div><div class="card empty">No elements yet. Add an abutment, pier or cylinder to start recording radials.</div>`;
+  const ei = ui.el, el = s.elements[ei], d = dateCols();
+  const typeOpts = ['abutment', 'pier', 'cylinder'].map(t => `<option value="${t}" ${el.type === t ? 'selected' : ''}>${TYPE_LABEL[t]}</option>`).join('');
+  const extra = el.type === 'abutment'
+    ? `<label class="fld"><span>Channel side on sketch</span><select data-bind="elements.${ei}.side" data-kind="text" data-rerender="1"><option value="left" ${el.side === 'left' ? 'selected' : ''}>Left wall (channel to its right)</option><option value="right" ${el.side === 'right' ? 'selected' : ''}>Right wall (channel to its left)</option></select></label>`
+    : el.type === 'pier' ? `<label class="fld"><span>Pier shape</span><select data-bind="elements.${ei}.shape" data-kind="text" data-rerender="1"><option value="square" ${el.shape === 'square' ? 'selected' : ''}>Square ends</option><option value="cutwater" ${el.shape === 'cutwater' ? 'selected' : ''}>Cutwater ends</option></select></label>` : `<div></div>`;
+  const cards = el.radials.map((r, ri) => {
+    const rows = r.points.map((p, pi) => {
+      const base = `elements.${ei}.radials.${ri}.points.${pi}`;
+      const cur = `<td>${numInput(base + '.reading', p.reading, '', 'data-col="1"')}</td><td class="calc" data-calc="lvl:${base}">${fv(levelOf(s, p.reading))}</td>`;
+      return `<tr><td>${numInput(base + '.d', p.d, '', 'data-col="0" data-rechart="1"')}</td>${cur}<td class="pv">${numInput(base + '.prev', p.prev, '', 'data-col="3"')}</td><td class="pv">${numInput(base + '.pen', p.pen, '', 'data-col="4"')}</td><td class="x"><button class="icon" data-act="del-pt" data-r="${ri}" data-p="${pi}" aria-label="Remove point">${ICON.x}</button></td></tr>`;
+    }).join('');
+    return `<article class="card radial"><h3>Radial ${r.n}<button class="btn sm ghost" data-act="add-pt" data-r="${ri}">${ICON.plus.replace('<svg', '<svg width="15" height="15"')}Point</button></h3>
+      <div class="tbl-wrap"><table class="data"><thead><tr><th>Dist (m)</th><th>Reading<small>${d.c}</small></th><th>Level<small>converted</small></th><th>Prev<small>${d.p}</small></th><th>Pen<small>${d.q}</small></th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="paper" data-chart="rad:${ei}:${ri}"></div></article>`;
+  }).join('');
+  return `
+  <div class="page-head"><div><h1>Radials</h1><p>Site readings taken out from each abutment, pier or cylinder, converted to bed levels automatically. Distances are from the face of the structure.</p></div></div>
+  ${noWaterNote()}
+  <div class="chips">${chips}${addChip}</div>
+  <section class="card">
+    <div class="el-bar">
+      <label class="fld"><span>Element name</span><input data-bind="elements.${ei}.name" data-kind="text" data-live="chips" value="${esc(el.name)}"></label>
+      <label class="fld"><span>Type</span><select data-bind="elements.${ei}.type" data-kind="text" data-rerender="1">${typeOpts}</select></label>
+      ${extra}
+      <div class="fld"><span>Radials</span><div style="display:flex;gap:8px"><div class="stepper"><button data-act="rad-minus" aria-label="Remove last radial">−</button><b>${el.radials.length}</b><button data-act="rad-plus" aria-label="Add a radial">+</button></div><button class="btn danger" data-act="del-el" aria-label="Delete ${esc(el.name)}">Delete</button></div></div>
+    </div>
+  </section>
+  <div class="rad-grid">${cards || '<div class="card empty">No radials. Use + to add one.</div>'}</div>`;
+}
+
+function changesBody() {
+  const s = state, which = ui.cmp, c = CMP[which], thr = s.checkThreshold > 0 ? s.checkThreshold : 0.75;
+  const sm = summarize(comparePoints(s, which), thr), st = changeStatements(s, which, sm, thr);
+  const dC = fmtDate(s.dates.current) || 'current', dO = fmtDate(s.dates[c.date]) || c.name;
+  if (!sm.n) return `<section class="card empty"><h2 style="margin-bottom:8px">Nothing to compare yet</h2><p>Enter current readings and import or type ${c.name} levels to see changes. Points need a value in both columns to be compared.</p></section>`;
+  const loc = it => `<button class="linkbtn" data-act="goto" data-page="${it.go.page}" data-sec="${it.go.sec || ''}" data-el="${it.go.el ?? ''}">${esc(it.loc)}</button>`;
+  const tile = (label, val, sub, cls = '') => `<div class="stat ${cls}"><span>${label}</span><b>${val}</b><small>${sub}</small></div>`;
+  const m = sm.max;
+  const tiles = [
+    tile('Maximum difference', `${Math.abs(m.diff).toFixed(2)} m`, m.diff ? `bed ${dirWord(m.diff)} at ${esc(m.loc)}` : 'no change anywhere', Math.abs(m.diff) >= thr ? 'flag' : ''),
+    tile('Average change', `${sgn(sm.avg)} m`, `${sm.avg < 0 ? 'bed lower on average' : sm.avg > 0 ? 'bed higher on average' : 'no net change'} · mean size ${sm.avgAbs.toFixed(2)} m`),
+    tile('Largest drop', sm.maxDown ? `${sgn(sm.maxDown.diff)} m` : '–', sm.maxDown ? esc(sm.maxDown.loc) : 'no point lower', sm.maxDown && Math.abs(sm.maxDown.diff) >= thr ? 'flag' : ''),
+    tile('Largest rise', sm.maxUp ? `${sgn(sm.maxUp.diff)} m` : '–', sm.maxUp ? esc(sm.maxUp.loc) : 'no point higher', sm.maxUp && sm.maxUp.diff >= thr ? 'flag' : '')
+  ].join('');
+  const checks = st.checks.map(k => `<div class="check ${k.level}"><b>${k.level === 'ok' ? 'No large differences' : k.level === 'high' ? 'Check before issuing' : 'Worth a second look'}</b><p>${esc(k.text)}</p></div>`).join('');
+  const flagRows = sm.flags.map(f => `<tr><td>${loc(f)}</td><td class="n">${fv(f.cur)}</td><td class="n">${fv(f.oth)}</td><td class="n d ${f.diff < 0 ? 'neg' : 'pos'}">${sgn(f.diff)}</td><td><span class="tag ${Math.abs(f.diff) >= thr * 2 ? 'high' : 'warn'}">${Math.abs(f.diff) >= thr * 2 ? 'Very large' : 'Large'}</span></td></tr>`).join('');
+  const grpRows = sm.groups.map(g => `<tr><td>${esc(g.name)}</td><td class="n">${g.n}</td><td class="n">${sgn(g.avg)}</td><td class="n d ${g.max.diff < 0 ? 'neg' : 'pos'}">${sgn(g.max.diff)}</td><td>${loc(g.max)}</td></tr>`).join('');
+  return `
+  <section class="card" style="margin-bottom:18px">
+    <div class="card-head"><h2>Current ${dC} vs ${c.name} ${dO}</h2><span class="muted">${sm.n} points compared · ${sm.nDown} lower · ${sm.nUp} higher</span></div>
+    <p class="headline">${esc(st.headline)}</p>
+    <div class="stats">${tiles}</div>
+  </section>
+  <div class="grid2">
+    <section class="card"><h2>Sense check</h2>${checks}
+      ${sm.flags.length ? `<div class="tbl-wrap" style="margin-top:14px"><table class="data list"><thead><tr><th>Reading</th><th class="n">Current</th><th class="n">${c.Name}</th><th class="n">Diff (m)</th><th></th></tr></thead><tbody>${flagRows}</tbody></table></div>` : ''}
+    </section>
+    <section class="card"><h2>Report wording</h2>
+      <p class="muted" style="margin-bottom:10px;font-size:.92rem">For the "Changes in bed profile" box, with reference to the ${c.name} underwater report.</p>
+      <textarea class="inp stmt" id="stmt" readonly rows="4">${esc(st.report)}</textarea>
+      <div class="tbl-actions"><button class="btn sm" data-act="copy-stmt">Copy wording</button></div>
+    </section>
+    <section class="card span2"><h2>By section and element</h2>
+      <div class="tbl-wrap"><table class="data list"><thead><tr><th>Section</th><th class="n">Points</th><th class="n">Average (m)</th><th class="n">Max (m)</th><th>Max at</th></tr></thead><tbody>${grpRows}</tbody></table></div>
+      <p class="muted" style="font-size:.85rem;margin-top:10px">Difference = current bed level − ${c.name} bed level. Negative means the bed is lower now (possible scour); positive means it is higher (deposition).</p>
+    </section>
+  </div>`;
+}
+function pageChanges() {
+  const s = state;
+  return `
+  <div class="page-head"><div><h1>Bed level changes</h1><p>How far the bed has moved since the previous and penultimate exams, with the largest differences flagged so you can sense check them.</p></div>
+    <label class="fld" style="margin:0;max-width:230px"><span>Flag differences of at least (m)</span>${numInput('checkThreshold', s.checkThreshold, '', 'data-rerender-num="1"')}</label></div>
+  <div class="chips">${Object.values(CMP).map(c => `<button class="chip" data-act="cmp" data-v="${c.key}" aria-pressed="${ui.cmp === c.key}">vs ${c.Name}<span class="cnt">${fmtDate(s.dates[c.date])}</span></button>`).join('')}</div>
+  <div id="chgBody">${changesBody()}</div>`;
+}
+function pageSketch() {
+  const s = state;
+  const prims = sketchGeometry(s.elements, s.sketchOrient);
+  const lib = LIBRARY.map((t, i) => `<article class="lib-item card"><div class="paper">${sketchSVG(sketchGeometry(t.els, t.orient || 'down', { flow: true }), { label: t.title })}</div><h3>${esc(t.title)}</h3><p>${esc(t.note)}</p><div class="lib-foot"><span class="muted" style="font-size:.82rem">${t.els.reduce((a, e) => a + e.n, 0)} radials</span><button class="btn sm" data-act="lib-add" data-i="${i}">Add to structure</button></div></article>`).join('');
+  return `
+  <div class="page-head"><div><h1>Radial sketches</h1><p>The structure sketch is drawn from your elements, numbered as the template sheet, and goes into the report. Use the library to add standard elements.</p></div></div>
+  <section class="card" style="margin-bottom:22px">
+    <div class="card-head"><h2>This structure</h2><div class="seg" role="group" aria-label="Flow direction on the sketch">${ORIENTS.map(([v, l]) => `<button data-act="orient" data-v="${v}" aria-pressed="${normOrient(s.sketchOrient) === v}">${l}</button>`).join('')}</div></div>
+    <div class="struct-sketch">
+      <div class="paper">${s.elements.length ? sketchSVG(prims, { label: 'Radial sketch for ' + (s.structure || 'this structure') }) : '<p class="empty">Add elements on the Radials page to draw the sketch.</p>'}</div>
+      <div>
+        <table class="mini"><thead><tr><th>Element</th><th>Drawn as</th><th style="text-align:right">Radials</th></tr></thead><tbody>
+        ${s.elements.map(e => `<tr><td>${esc(e.name)}</td><td>${e.type === 'abutment' ? (e.side === 'left' ? 'Left abutment' : 'Right abutment') : e.type === 'pier' ? (e.shape === 'cutwater' ? 'Cutwater pier' : 'Square pier') : 'Cylinder'}</td><td class="wlv">${e.radials.length}</td></tr>`).join('')}
+        </tbody></table>
+        <p class="muted" style="font-size:.88rem;margin-top:14px">Radial 1 is always at the upstream end. Abutments number along the face from upstream to downstream; piers number clockwise from the upstream nose. Change sides, shapes and radial counts on the Radials page. Datum: ${esc(s.datumLocation || 'not set')}</p>
+      </div>
+    </div>
+  </section>
+  <h2 style="margin:0 0 14px">Template library</h2>
+  <div class="lib">${lib}</div>`;
+}
+
+function pageReport() {
+  const pages = reportPages(state);
+  return `
+  <div class="page-head"><div><h1>Report</h1><p>${pages.length} pages laid out as Appendix E: tabulated levels, five cross-section plots, the radials sketch and the radial soundings.</p></div>
+    <div class="tbl-actions" style="margin:0"><button class="btn" data-act="export-xlsx">Export Excel</button><button class="btn primary" data-act="export-pdf">Export PDF</button></div></div>
+  <div class="report-pages">${pages.map((p, i) => `<div class="page-label">Page ${i + 1} · ${esc(p.label)}</div><div class="sheet ${p.o}">${p.svg}</div>`).join('')}</div>`;
+}
+
+function noWaterNote() {
+  return `<div class="card note-warn" data-nowater ${waterOf(state) == null ? '' : 'hidden'}><b>Readings can't be converted yet.</b> Add the datum level and the current datum to water distance on <button class="linkbtn" data-act="page" data-v="site">Site details</button>.</div>`;
+}
+/* live refresh of calculated cells + charts without re-rendering inputs */
+function refresh() {
+  $$('[data-calc]').forEach(c => {
+    const [k, path] = c.dataset.calc.split(':');
+    if (k === 'water') { c.textContent = fv(waterOf(state, path)) || (c.tagName === 'B' ? '–' : ''); return; }
+    const row = getPath(path);
+    if (!row) return;
+    if (k === 'lvl') c.textContent = fv(levelOf(state, row.reading));
+    if (k === 'read') c.textContent = fv(row.reading);
+  });
+  $$('[data-nowater]').forEach(n => { n.hidden = waterOf(state) != null; });
+  $$('[data-chart]').forEach(c => {
+    const p = c.dataset.chart.split(':');
+    if (p[0] === 'xs') c.innerHTML = xsChartFor(state, p[1], { fs: 13 });
+    else { const el = state.elements[+p[1]], rad = el && el.radials[+p[2]]; if (rad) c.innerHTML = radialChartFor(state, rad, { w: 520, h: 330, title: '' }); }
+  });
+}
+
+function getPath(path) { return path.split('.').reduce((o, k) => o == null ? o : o[/^\d+$/.test(k) ? +k : k], state); }
+function setPath(path, val) {
+  const ks = path.split('.'); const last = ks.pop();
+  const o = ks.reduce((o, k) => o[/^\d+$/.test(k) ? +k : k], state);
+  o[/^\d+$/.test(last) ? +last : last] = val;
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('input', e => {
+  const t = e.target; if (!t.dataset || !t.dataset.bind) return;
+  const kind = t.dataset.kind;
+  if (kind === 'num') setPath(t.dataset.bind, num(t.value));
+  else setPath(t.dataset.bind, t.value);
+  if (t.dataset.rerenderNum && num(t.value) > 0) { const cb = $('#chgBody'); if (cb) cb.innerHTML = changesBody(); }
+  if (t.dataset.live === 'hdr') $('#hdrStruct').textContent = state.structure || 'New exam';
+  if (t.dataset.live === 'chips') { const chip = $(`.chip[data-v="${ui.el}"]`); if (chip) chip.firstChild.textContent = t.value; }
+  persist(); refresh();
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.act === 'add-el') { addElement(t.value); return; }
+  if (t.dataset && t.dataset.bind) {
+    if (t.dataset.kind === 'num' && t.value !== '') t.value = fv(num(t.value));
+    if (t.dataset.rerender) { setPath(t.dataset.bind, t.value); persist(); render(); }
+    if (t.dataset.bind.startsWith('dates.')) { persist(); }
+  }
+});
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  if (e.key === 'Enter' && t.tagName === 'INPUT' && t.dataset.col != null) {
+    e.preventDefault();
+    const tr = t.closest('tr'); const next = tr && tr.nextElementSibling;
+    const n = next && next.querySelector(`input[data-col="${t.dataset.col}"]`);
+    if (n) { n.focus(); n.select(); } else t.blur();
+  }
+  if ((e.key === 'Enter' || e.key === ' ') && t.dataset && t.dataset.drop) { e.preventDefault(); $('#filePrev').click(); }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b || b.tagName === 'SELECT') return;
+  const a = b.dataset.act, v = b.dataset.v;
+  const close = () => { $('#msheet').classList.remove('on'); $('#scrim').classList.remove('on'); };
+  switch (a) {
+    case 'page': ui.page = v; persist(); render(); scrollTo({ top: 0 }); break;
+    case 'sec': ui.sec = v; persist(); render(); break;
+    case 'cmp': ui.cmp = v; persist(); render(); break;
+    case 'goto': ui.page = b.dataset.page; if (b.dataset.sec) ui.sec = b.dataset.sec; if (b.dataset.el !== '') ui.el = +b.dataset.el; persist(); render(); scrollTo({ top: 0 }); break;
+    case 'copy-stmt': { const t = $('#stmt'); const txt = t.value; const fallback = () => { t.focus(); t.select(); try { document.execCommand('copy'); toast('Wording copied.'); } catch (e) { toast('Select the text and copy it.'); } }; if (navigator.clipboard) navigator.clipboard.writeText(txt).then(() => toast('Wording copied.'), fallback); else fallback(); break; }
+    case 'el': ui.el = +v; persist(); render(); break;
+    case 'orient': state.sketchOrient = v; persist(); render(); break;
+    case 'menu': $('#msheet').classList.add('on'); $('#scrim').classList.add('on'); break;
+    case 'close-menu': close(); break;
+    case 'add-row': { const rows = state.xs[ui.sec]; const last = rows[rows.length - 1]; const n = rows.filter(r => /^\d+$/.test(r.label)).length + 1; const idx = last && /BANK|ABT/i.test(last.label) ? rows.length - 1 : rows.length; rows.splice(idx, 0, { label: String(n), reading: null, prev: null, pen: null }); persist(); render(); break; }
+    case 'del-row': state.xs[ui.sec].splice(+b.dataset.i, 1); persist(); render(); break;
+    case 'add-pt': { const r = state.elements[ui.el].radials[+b.dataset.r]; const last = r.points[r.points.length - 1]; r.points.push({ d: last ? r2(last.d + 1) : 0, reading: null, prev: null, pen: null }); persist(); render(); break; }
+    case 'del-pt': state.elements[ui.el].radials[+b.dataset.r].points.splice(+b.dataset.p, 1); persist(); render(); break;
+    case 'rad-plus': { const el = state.elements[ui.el]; el.radials.push({ n: (el.radials.length ? Math.max(...el.radials.map(r => r.n)) : 0) + 1, points: [0, 1, 2, 3].map(d => ({ d, reading: null, prev: null, pen: null })) }); persist(); render(); break; }
+    case 'rad-minus': { const ei = ui.el, el = state.elements[ei]; if (!el.radials.length) break; const last = el.radials[el.radials.length - 1]; const doIt = () => { el.radials.pop(); persist(); render(); }; if (last.points.some(p => p.reading != null || p.prev != null || p.pen != null)) askConfirm(`Remove radial ${last.n}?`, 'It has readings or previous levels, which will be removed with it.', 'Remove radial').then(ok => { if (ok) doIt(); }); else doIt(); break; }
+    case 'del-el': { const ei = ui.el, el = state.elements[ei]; askConfirm(`Delete ${el.name}?`, `This removes ${el.name} and all ${el.radials.length} of its radials from this exam. Save a copy first if you might need them.`, 'Delete element').then(ok => { if (!ok) return; const idx = state.elements.indexOf(el); if (idx < 0) return; state.elements.splice(idx, 1); ui.el = Math.max(0, Math.min(idx, state.elements.length - 1)); persist(); render(); toast(`${el.name} deleted.`); }); break; }
+    case 'lib-add': { const t = LIBRARY[+b.dataset.i]; t.els.forEach(te => { let name = te.name, k = 2; while (state.elements.some(e => e.name.toUpperCase() === name.toUpperCase())) name = `${te.name} ${k++}`; const ne = newElement(te.type, name, te.side); ne.shape = te.shape || 'square'; state.elements.push(ne); }); persist(); toast(`Added ${t.els.length === 1 ? 'one element' : t.els.length + ' elements'} to the structure. Enter its radials on the Radials page.`); render(); break; }
+    case 'new': askConfirm('Start a new blank exam?', 'Your current work in this browser will be replaced. Save it first if you need it.', 'Start new exam').then(ok => { if (ok) { state = blankState(); ui.el = 0; persist(); render(); toast('New exam started.'); } }); break;
+    case 'example': askConfirm('Load the DOW 24A example?', 'Your current work in this browser will be replaced. Save it first if you need it.', 'Load example').then(ok => { if (ok) { state = exampleState(); ui.el = 0; persist(); render(); toast('DOW 24A example loaded.'); } }); break;
+    case 'open': close(); $('#fileOpen').click(); break;
+    case 'import-prev': close(); $('#filePrev').click(); break;
+    case 'save': close(); saveJSON(); break;
+    case 'export-xlsx': close(); exportExcel(); break;
+    case 'export-pdf': close(); exportPDF(); break;
+  }
+});
+function addElement(type) {
+  if (!type) return;
+  const base = type === 'abutment' ? 'ABT' : type === 'pier' ? 'PIER' : 'CYL';
+  let k = state.elements.filter(e => e.type === type).length + 1, name = `${base} ${k}`;
+  while (state.elements.some(e => e.name.toUpperCase() === name.toUpperCase())) name = `${base} ${++k}`;
+  state.elements.push(newElement(type, name, 'left'));
+  ui.el = state.elements.length - 1; persist(); render();
+}
+addEventListener('resize', () => { clearTimeout(addEventListener._r); addEventListener._r = setTimeout(renderTabs, 150); });
+
+/* drag-and-drop for the import zone */
+document.addEventListener('dragover', e => { const d = e.target.closest && e.target.closest('[data-drop]'); if (d) { e.preventDefault(); d.classList.add('over'); } });
+document.addEventListener('dragleave', e => { const d = e.target.closest && e.target.closest('[data-drop]'); if (d) d.classList.remove('over'); });
+document.addEventListener('drop', e => { const d = e.target.closest && e.target.closest('[data-drop]'); if (!d) return; e.preventDefault(); d.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) handlePrevFile(f); });
+
+/* ---------------- files, imports and exports ---------------- */
+const _libs = {};
+function loadScript(src) {
+  if (!_libs[src]) _libs[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res;
+    s.onerror = () => { delete _libs[src]; rej(new Error('Could not load a component needed for this. Check your connection and try again.')); };
+    document.head.appendChild(s);
+  });
+  return _libs[src];
+}
+let _dl;
+function getDownloads() {
+  if (_dl === undefined) _dl = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+  return _dl;
+}
+getDownloads();
+async function saveFile(filename, blob) {
+  const dl = await getDownloads();
+  if (dl) {
+    try { await dl.save({ filename, data: blob }); toast(`Saved ${filename}`); }
+    catch (e) {
+      if (e && e.code === 'declined') toast('Download cancelled.');
+      else if (e && e.code === 'rate_limited') toast('A download prompt is already open. Finish that one first.', true);
+      else toast(`Couldn't save ${filename}. ${e && e.message ? e.message : ''}`, true);
+    }
+    return;
+  }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+  toast(`Saved ${filename}`);
+}
+function baseName() {
+  const st = (state.structure || 'underwater-exam').replace(/[^\w.-]+/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  return `${st}_${state.dates.current || todayISO()}`;
+}
+function saveJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 1)], { type: 'application/json' });
+  saveFile(baseName() + '.json', blob);
+}
+
+function serialToISO(v) {
+  if (v == null || v === '') return '';
+  if (typeof v === 'number' && v > 1000) return new Date(Date.UTC(1899, 11, 30) + Math.round(v) * 864e5).toISOString().slice(0, 10);
+  const m = String(v).match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})$/);
+  if (m) { const y = m[3].length === 2 ? '20' + m[3] : m[3]; return `${y}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`; }
+  if (/^\d{4}-\d{2}-\d{2}/.test(String(v))) return String(v).slice(0, 10);
+  return '';
+}
+async function readStateFromFile(file, allowPdf) {
+  const name = file.name.toLowerCase();
+  if (name.endsWith('.pdf')) {
+    if (!allowPdf) throw new Error('A PDF report can be brought in as previous data only. Use Import previous.');
+    const pages = await readPdfPages(file);
+    return parseReportText(pages);
+  }
+  if (name.endsWith('.json')) {
+    let o; try { o = JSON.parse(await file.text()); } catch (e) { throw new Error(`${file.name} isn't valid JSON.`); }
+    if (!o || typeof o !== 'object' || !o.xs) throw new Error(`${file.name} isn't an underwater soundings save file.`);
+    return normalize(o);
+  }
+  if (/\.xls[xm]$/.test(name)) {
+    await loadScript(LIBS.sheetjs);
+    const wb = XLSX.read(await file.arrayBuffer(), { type: 'array' });
+    return parseWorkbook(wb);
+  }
+  throw new Error(allowPdf ? 'Choose a .pdf, .json or .xlsx file.' : 'Choose a .json or .xlsx file.');
+}
+function parseWorkbook(wb) {
+  const V = (ws, a) => (ws && ws[a] && ws[a].v !== undefined) ? ws[a].v : null;
+  if (wb.Sheets.APP_DATA) {
+    const ws = wb.Sheets.APP_DATA; let s = '', r = 1;
+    while (V(ws, 'A' + r) != null) { s += V(ws, 'A' + r); r++; }
+    return normalize(JSON.parse(s));
+  }
+  const inp = wb.Sheets['SITE XS DATA INPUT'], xs = wb.Sheets['XS DATA'];
+  if (!inp && !xs) throw new Error('No soundings found in that workbook. Use this app’s Excel export or the underwater Excel template.');
+  const s = blankState();
+  s.structure = String(V(inp, 'F1') ?? V(xs, 'J2') ?? '');
+  s.datumLevel = num(V(inp, 'F2') ?? V(xs, 'J3'));
+  s.datumLocation = String(V(inp, 'F3') ?? V(xs, 'J4') ?? '');
+  s.d2w = { current: num(V(inp, 'F4') ?? V(xs, 'J5')), previous: num(V(inp, 'F5') ?? V(xs, 'J6')), penultimate: num(V(inp, 'F6') ?? V(xs, 'J7')) };
+  s.dates = { current: serialToISO(V(inp, 'J2') ?? V(xs, 'L5')), previous: serialToISO(V(inp, 'J3') ?? V(xs, 'L6')), penultimate: serialToISO(V(inp, 'J4') ?? V(xs, 'L7')) };
+  const w = waterOf(s);
+  const B = {
+    us30: { inL: 'A', inR: 'B', xL: 'A', xB: 'B', xP: 'C', xQ: 'D', r0: 4, r1: 21 },
+    usFace: { inL: 'F', inR: 'G', xL: 'A', xB: 'B', xP: 'C', xQ: 'D', r0: 25, r1: 62 },
+    centre: { inL: 'F', inR: 'K', xL: 'H', xB: 'I', xP: 'J', xQ: 'K', r0: 25, r1: 62 },
+    dsFace: { inL: 'F', inR: 'O', xL: 'O', xB: 'P', xP: 'Q', xQ: 'R', r0: 25, r1: 62 },
+    ds30: { inL: 'T', inR: 'U', xL: 'O', xB: 'P', xP: 'Q', xQ: 'R', r0: 4, r1: 21 }
+  };
+  for (const sec of SECTIONS) {
+    const b = B[sec.key], map = new Map(), order = [];
+    if (xs) for (let r = b.r0; r <= b.r1; r++) {
+      const l = V(xs, b.xL + r); if (l == null || l === '') continue;
+      const key = String(l).trim().toUpperCase();
+      if (!map.has(key)) { map.set(key, { label: String(l).trim(), lvl: num(V(xs, b.xB + r)), prev: num(V(xs, b.xP + r)), pen: num(V(xs, b.xQ + r)) }); order.push(key); }
+    }
+    let rows = [];
+    if (inp && V(inp, b.inL + '11') != null) {
+      for (let r = 11; r <= 60; r++) {
+        const l = V(inp, b.inL + r); if (l == null || l === '') break;
+        const m = map.get(String(l).trim().toUpperCase()) || {};
+        rows.push({ label: String(l).trim(), reading: num(V(inp, b.inR + r)), prev: m.prev ?? null, pen: m.pen ?? null });
+      }
+    } else rows = order.map(k => { const m = map.get(k); return { label: m.label, reading: (m.lvl != null && w != null) ? r2(w - m.lvl) : null, prev: m.prev, pen: m.pen }; });
+    if (rows.length) s.xs[sec.key] = rows;
+  }
+  const skip = new Set(['AMMENDMENTS', 'GUIDANCE NOTES', 'SITE XS DATA INPUT', 'SITE RAD DATA INPUT', 'XS DATA', 'RADIAL SKETCH', 'SKETCH TEMPLATES']);
+  const els = [], seen = new Set();
+  wb.SheetNames.forEach(sn => {
+    if (skip.has(sn.toUpperCase())) return;
+    const ws = wb.Sheets[sn]; if (!ws || !ws['!ref']) return;
+    const range = XLSX.utils.decode_range(ws['!ref']); const rads = [];
+    for (let r = 1; r <= range.e.r + 1; r++) {
+      const bv = V(ws, 'B' + r); const m = typeof bv === 'string' && bv.trim().match(/^Radial\s*(\d+)$/i);
+      if (!m) continue;
+      const pts = [];
+      for (let rr = r + 2; rr < r + 10; rr++) {
+        const d = V(ws, 'A' + rr); if (typeof d !== 'number') break;
+        const lv = num(V(ws, 'B' + rr));
+        pts.push({ d, reading: (lv != null && w != null) ? r2(w - lv) : null, prev: num(V(ws, 'C' + rr)), pen: num(V(ws, 'D' + rr)) });
+      }
+      if (pts.some(p => p.reading != null || p.prev != null || p.pen != null)) rads.push({ n: +m[1], points: pts });
+    }
+    if (!rads.length) return;
+    let name = String(V(ws, 'A3') || sn).trim();
+    if (seen.has(name.toUpperCase())) name = `${name} (${sn})`;
+    seen.add(name.toUpperCase());
+    const type = /PIER/i.test(name) ? 'pier' : /CYL/i.test(name) ? 'cylinder' : 'abutment';
+    els.push({ id: newId(), name, type, side: /^(US|HM|RIGHT)/i.test(name) ? 'right' : 'left', shape: 'square', radials: rads.sort((a, c) => a.n - c.n) });
+  });
+  if (els.length) s.elements = els;
+  return normalize(s);
+}
+
+/* Move last exam into Previous / Penultimate.
+   Its current readings are converted with ITS OWN datum-to-water, then shifted onto this exam's datum
+   if a different arbitrary datum value was used, so every column sits on the same basis. */
+function importPrevious(old) {
+  const s = state;
+  if (!s.structure) s.structure = old.structure;
+  if (!s.datumLocation) s.datumLocation = old.datumLocation;
+  if (s.datumLevel == null) s.datumLevel = old.datumLevel;
+  const shift = (s.datumLevel != null && old.datumLevel != null) ? r2(s.datumLevel - old.datumLevel) : 0;
+  const sh = v => v == null ? null : r2(v + shift);
+  const oldLevel = row => sh(row._level != null ? row._level : levelOf(old, row.reading));
+  let missingD2W = false;
+  s.dates.previous = old.dates.current || ''; s.dates.penultimate = old.dates.previous || '';
+  s.d2w.previous = old.d2w.current; s.d2w.penultimate = old.d2w.previous;
+  let nRows = 0, nPts = 0;
+  SECTIONS.forEach(sec => {
+    const oldRows = old.xs[sec.key] || [];
+    if (!oldRows.length) return;
+    let cur = s.xs[sec.key];
+    cur.forEach(r => { r.prev = null; r.pen = null; });
+    if (cur.every(r => r.reading == null)) { cur = s.xs[sec.key] = []; }
+    let at = 0;
+    oldRows.forEach(or => {
+      const key = or.label.trim().toUpperCase();
+      let idx = cur.findIndex(r => r.label.trim().toUpperCase() === key);
+      if (idx < 0) { cur.splice(at, 0, { label: or.label, reading: null, prev: null, pen: null }); idx = at; }
+      const t = cur[idx];
+      if (or.reading != null && waterOf(old) == null) missingD2W = true;
+      t.prev = oldLevel(or); t.pen = sh(or.prev);
+      at = idx + 1; nRows++;
+    });
+  });
+  s.elements.forEach(e => e.radials.forEach(r => r.points.forEach(p => { p.prev = null; p.pen = null; })));
+  old.elements.forEach(oe => {
+    let e = s.elements.find(x => x.name.trim().toUpperCase() === oe.name.trim().toUpperCase());
+    if (!e) { e = clone(oe); e.id = newId(); e.radials.forEach(r => r.points.forEach(p => { p.reading = null; delete p._level; })); s.elements.push(e); }
+    oe.radials.forEach(orad => {
+      let r = e.radials.find(x => x.n === orad.n);
+      if (!r) { r = { n: orad.n, points: [] }; e.radials.push(r); e.radials.sort((a, b) => a.n - b.n); }
+      orad.points.forEach(op => {
+        let p = r.points.find(x => x.d === op.d);
+        if (!p) { p = { d: op.d, reading: null, prev: null, pen: null }; r.points.push(p); r.points.sort((a, b) => a.d - b.d); }
+        p.prev = oldLevel(op); p.pen = sh(op.prev); nPts++;
+      });
+    });
+  });
+  return { nRows, nPts, shift, missingD2W };
+}
+async function handlePrevFile(file) {
+  try {
+    busy(true, 'Reading previous exam…');
+    const old = await readStateFromFile(file, true);
+    const res = importPrevious(old);
+    persist(); render();
+    let msg = `${old._fromPdf ? 'Read the PDF report. ' : ''}Imported ${res.nRows} cross-section points and ${res.nPts} radial points. ${fmtDate(state.dates.previous) || 'Its current exam'} is now Previous${state.dates.penultimate ? ', ' + fmtDate(state.dates.penultimate) + ' is Penultimate' : ''}.`;
+    if (res.shift) msg += ` Levels shifted ${res.shift > 0 ? '+' : ''}${res.shift} m to match this exam's datum.`;
+    if (res.missingD2W) msg += ' Some readings had no datum to water, so they could not be converted.';
+    toast(msg, res.missingD2W);
+  } catch (e) { toast(e.message || 'That file could not be read.', true); }
+  finally { busy(false); }
+}
+async function handleOpenFile(file) {
+  try {
+    busy(true, 'Opening exam…');
+    state = await readStateFromFile(file); ui.el = 0; persist(); render();
+    toast(`Opened ${file.name}.`);
+  } catch (e) { toast(e.message || 'That file could not be opened.', true); }
+  finally { busy(false); }
+}
+$('#fileOpen').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) handleOpenFile(f); });
+$('#filePrev').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) handlePrevFile(f); });
+
+function svgToPng(svg, w, h, scale) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/png'));
+    };
+    img.onerror = () => rej(new Error('A page could not be drawn.'));
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+}
+function svgSize(svg) {
+  const vb = (svg.match(/viewBox="([^"]+)"/) || [])[1].split(/\s+/).map(Number);
+  const w = num((svg.match(/^<svg[^>]*\swidth="([\d.]+)"/) || [])[1]) || vb[2];
+  const h = num((svg.match(/^<svg[^>]*\sheight="([\d.]+)"/) || [])[1]) || vb[3];
+  return [w, h];
+}
+
+async function exportPDF() {
+  try {
+    busy(true, 'Building PDF report…');
+    await loadScript(LIBS.jspdf);
+    const { jsPDF } = window.jspdf;
+    const pages = reportPages(state);
+    let doc;
+    for (let i = 0; i < pages.length; i++) {
+      const pg = pages[i]; $('#busyMsg').textContent = `Drawing page ${i + 1} of ${pages.length}…`;
+      const png = await svgToPng(pg.svg, pg.w, pg.h, 2.6);
+      const o = pg.o === 'l' ? 'landscape' : 'portrait';
+      if (!doc) doc = new jsPDF({ orientation: o, unit: 'mm', format: 'a4', compress: true }); else doc.addPage('a4', o);
+      const [W, H] = o === 'landscape' ? [297, 210] : [210, 297];
+      doc.addImage(png, 'PNG', 0, 0, W, H, undefined, 'FAST');
+      // invisible text layer so the tables can be read back (Import previous accepts this PDF)
+      const K = W / pg.w; doc.setFont('helvetica', 'normal');
+      (pg.texts || []).forEach(t => {
+        const str = t.t.replace(/[\u2013\u2014]/g, '-').replace(/[^\x20-\x7E]/g, ' ');
+        doc.setFontSize(t.size * 0.75);
+        const tw = doc.getTextWidth(str); let x = t.x * K;
+        if (t.anchor === 'middle') x -= tw / 2; else if (t.anchor === 'end') x -= tw;
+        doc.text(str, x, t.y * K, { renderingMode: 'invisible' });
+      });
+    }
+    doc.setProperties({ title: `${state.structure} underwater soundings`, creator: 'Aureos' });
+    busy(false);
+    await saveFile(baseName() + '_Appendix_E.pdf', doc.output('blob'));
+  } catch (e) { busy(false); toast(e.message || 'The PDF could not be built.', true); }
+}
+
+async function exportExcel() {
+  try {
+    busy(true, 'Building Excel workbook…');
+    await loadScript(LIBS.exceljs);
+    const s = state, wb = new ExcelJS.Workbook(); wb.creator = 'Aureos'; wb.created = new Date();
+    const thin = { style: 'thin', color: { argb: 'FF8090A0' } }, border = { top: thin, left: thin, bottom: thin, right: thin };
+    const navy = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF004578' } };
+    const soft = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE3EEF7' } };
+    const cellSet = (ws, r, c, v, o = {}) => {
+      const cell = ws.getCell(r, c); cell.value = v;
+      cell.border = border; cell.alignment = { horizontal: o.align || 'center', vertical: 'middle', wrapText: true };
+      if (o.head) { cell.fill = navy; cell.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 9 }; }
+      else cell.font = { bold: !!o.bold, size: 10 };
+      if (o.fill) cell.fill = o.fill;
+      if (typeof v === 'number') cell.numFmt = '0.0#';
+      return cell;
+    };
+    const img = async (svg, scale = 1.6) => { const [w, h] = svgSize(svg); return { id: wb.addImage({ base64: await svgToPng(svg, w, h, scale), extension: 'png' }), w, h }; };
+    const dates = ['current', 'previous', 'penultimate'].map(k => fmtDate(s.dates[k]) || '');
+
+    // Site data
+    const ws0 = wb.addWorksheet('Site Data', { properties: { tabColor: { argb: 'FF004578' } } });
+    ws0.columns = [{ width: 34 }, { width: 44 }, { width: 14 }];
+    ws0.getCell('A1').value = 'Underwater soundings'; ws0.getCell('A1').font = { bold: true, size: 15, color: { argb: 'FF004578' } };
+    const info = [['Structure ELR and number', s.structure], ['Datum level (m)', s.datumLevel], ['Location of datum', s.datumLocation],
+      ['Exam date', dates[0]], ['Previous exam date', dates[1]], ['Penultimate exam date', dates[2]],
+      ['Datum to water level (m)', s.d2w.current], ['Previous datum to water level (m)', s.d2w.previous], ['Penultimate datum to water level (m)', s.d2w.penultimate],
+      ['Current water level (m)', waterOf(s)], ['Conversion', 'Bed level = datum level − datum to water − site reading']];
+    info.forEach((r, i) => { cellSet(ws0, i + 3, 1, r[0], { align: 'left', bold: true }); cellSet(ws0, i + 3, 2, r[1] ?? '', { align: 'left' }); });
+
+    // Site readings (raw input, as taken)
+    const wsR = wb.addWorksheet('Site Readings');
+    wsR.getCell('A1').value = 'Current site readings (m) as entered, before conversion'; wsR.getCell('A1').font = { bold: true, size: 12 };
+    let rc = 1;
+    SECTIONS.forEach(sec => {
+      cellSet(wsR, 3, rc, sec.chip, { head: true }); wsR.mergeCells(3, rc, 3, rc + 1);
+      cellSet(wsR, 4, rc, 'Point', { head: true }); cellSet(wsR, 4, rc + 1, 'Reading', { head: true });
+      s.xs[sec.key].forEach((r, i) => { cellSet(wsR, 5 + i, rc, r.label); cellSet(wsR, 5 + i, rc + 1, r.reading ?? ''); });
+      wsR.getColumn(rc).width = 11; wsR.getColumn(rc + 1).width = 10; wsR.getColumn(rc + 2).width = 3; rc += 3;
+    });
+
+    // XS DATA tables
+    const ws = wb.addWorksheet('XS DATA');
+    for (let c = 1; c <= 20; c++) ws.getColumn(c).width = [14, 10, 10, 10, 11, 3, 3][(c - 1) % 7] || 10;
+    const block = (r0, c0, sec) => {
+      cellSet(ws, r0, c0, sec.dist.join(' '), { head: true }); ws.mergeCells(r0, c0, r0 + 1, c0);
+      cellSet(ws, r0, c0 + 1, sec.table, { head: true }); ws.mergeCells(r0, c0 + 1, r0, c0 + 3);
+      cellSet(ws, r0, c0 + 4, 'Water Level (m)', { head: true }); ws.mergeCells(r0, c0 + 4, r0 + 1, c0 + 4);
+      dates.forEach((d, i) => cellSet(ws, r0 + 1, c0 + 1 + i, d, { head: true }));
+      ws.getRow(r0).height = 30;
+      s.xs[sec.key].forEach((r, i) => {
+        const rr = r0 + 2 + i;
+        cellSet(ws, rr, c0, r.label, { bold: true });
+        cellSet(ws, rr, c0 + 1, levelOf(s, r.reading) ?? '', { fill: soft });
+        cellSet(ws, rr, c0 + 2, r.prev ?? (s.dates.previous ? '' : 'N/A'));
+        cellSet(ws, rr, c0 + 3, r.pen ?? (s.dates.penultimate ? '' : 'N/A'));
+        cellSet(ws, rr, c0 + 4, waterOf(s) ?? '');
+      });
+      return s.xs[sec.key].length + 2;
+    };
+    ws.getCell('A1').value = 'APPENDIX E – RIVERBED SOUNDINGS: TABULATED CROSS SECTION LEVELS'; ws.getCell('A1').font = { bold: true, size: 12, color: { argb: 'FF004578' } };
+    const h1 = Math.max(block(3, 1, SECTIONS[0]), block(3, 15, SECTIONS[4]));
+    const gd = [['General Data for structure', s.structure], ['Datum Level:', `${fv(s.datumLevel)} m`], ['Datum Position:', s.datumLocation], ['Datum to Water Level:', `${fv(s.d2w.current)} m  ${dates[0]}`], ['Previous Datum to Water Level:', `${s.d2w.previous == null ? 'N/A' : fv(s.d2w.previous) + ' m'}  ${dates[1]}`], ['Penultimate Datum to Water Level:', `${s.d2w.penultimate == null ? 'N/A' : fv(s.d2w.penultimate) + ' m'}  ${dates[2]}`], ['Notes', '1 U/S = Upstream; 2 D/S = Downstream; 3 All levels are relative to arbitrary datum above']];
+    ws.getColumn(8).width = 30; ws.getColumn(9).width = 22; ws.getColumn(10).width = 22;
+    gd.forEach((r, i) => { cellSet(ws, 3 + i, 8, r[0], { align: 'right', bold: true, ...(i === 0 ? { head: true } : {}) }); cellSet(ws, 3 + i, 9, r[1] ?? '', { align: 'left', bold: i === 0 }); ws.mergeCells(3 + i, 9, 3 + i, 12); });
+    const r1 = 3 + Math.max(h1, gd.length) + 2;
+    block(r1, 1, SECTIONS[1]); block(r1, 8, SECTIONS[2]); block(r1, 15, SECTIONS[3]);
+
+    // XS plots
+    const wsP = wb.addWorksheet('XS Plots');
+    let row = 0;
+    for (const sec of SECTIONS) {
+      $('#busyMsg').textContent = `Drawing ${sec.name} plot…`;
+      wsP.getCell(row + 1, 1).value = sec.plot; wsP.getCell(row + 1, 1).font = { bold: true, size: 12 };
+      const im = await img(xsChartFor(s, sec.key, { w: 1000, h: 560, fs: 13 }));
+      wsP.addImage(im.id, { tl: { col: 0, row: row + 1.3 }, ext: { width: 900, height: 504 } });
+      row += 29;
+    }
+
+    // Radial sketch
+    const wsS = wb.addWorksheet('Radial Sketch');
+    wsS.getCell('A1').value = 'RADIALS SKETCH  ' + (s.structure || ''); wsS.getCell('A1').font = { bold: true, size: 12 };
+    if (s.elements.length) {
+      const sk = sketchSVG(sketchGeometry(s.elements, s.sketchOrient));
+      const vb = sk.match(/viewBox="([^"]+)"/)[1].split(' ').map(Number);
+      const sc = Math.min(700 / vb[2], 760 / vb[3]);
+      const sized = sk.replace('<svg ', `<svg width="${vb[2] * sc}" height="${vb[3] * sc}" `);
+      const im = await img(sized, 2);
+      wsS.addImage(im.id, { tl: { col: 0.2, row: 2 }, ext: { width: im.w, height: im.h } });
+      wsS.getCell(Math.ceil(im.h / 20) + 5, 1).value = 'Datum: ' + (s.datumLocation || '');
+    }
+
+    // Radials per element
+    const used = new Set();
+    for (const el of s.elements) {
+      let nm = ('Radials ' + el.name).replace(/[\[\]:*?\/\\]/g, ' ').slice(0, 31).trim(), k = 2;
+      while (used.has(nm.toUpperCase())) nm = nm.slice(0, 28) + ' ' + k++;
+      used.add(nm.toUpperCase());
+      const wr = wb.addWorksheet(nm);
+      wr.columns = [{ width: 16 }, { width: 11 }, { width: 11 }, { width: 11 }, { width: 4 }];
+      let r0 = 1;
+      for (const rad of el.radials) {
+        $('#busyMsg').textContent = `Drawing ${el.name} radial ${rad.n}…`;
+        cellSet(wr, r0, 1, el.name, { head: true }); cellSet(wr, r0, 2, 'Radial ' + rad.n, { head: true }); wr.mergeCells(r0, 2, r0, 4);
+        cellSet(wr, r0 + 1, 1, 'Distance from Structure (m)', { bold: true }); dates.forEach((d, i) => cellSet(wr, r0 + 1, 2 + i, d, { bold: true }));
+        wr.getRow(r0 + 1).height = 30;
+        rad.points.forEach((p, i) => {
+          cellSet(wr, r0 + 2 + i, 1, p.d); cellSet(wr, r0 + 2 + i, 2, levelOf(s, p.reading) ?? '', { fill: soft });
+          cellSet(wr, r0 + 2 + i, 3, p.prev ?? (s.dates.previous ? '' : 'N/A')); cellSet(wr, r0 + 2 + i, 4, p.pen ?? (s.dates.penultimate ? '' : 'N/A'));
+        });
+        const im = await img(radialChartFor(s, rad, { w: 520, h: 330 }));
+        wr.addImage(im.id, { tl: { col: 5, row: r0 - 1 }, ext: { width: 468, height: 297 } });
+        r0 += Math.max(17, rad.points.length + 4);
+      }
+      const kr = r0 + 1;
+      [['KEY:', ''], ['Current water level', 'blue'], ['Bed level ' + dates[0], 'black'], ['Previous bed level ' + dates[1], 'red'], ['Penultimate bed level ' + dates[2], 'green']]
+        .forEach((k2, i) => { wr.getCell(kr + i, 1).value = k2[0]; wr.getCell(kr + i, 2).value = k2[1]; if (!i) wr.getCell(kr, 1).font = { bold: true }; });
+    }
+
+    // Bed level changes
+    const wc = wb.addWorksheet('Bed Level Changes');
+    wc.columns = [{ width: 46 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 13 }];
+    let cr = 1;
+    const thrX = s.checkThreshold > 0 ? s.checkThreshold : 0.75;
+    for (const which of ['prev', 'pen']) {
+      const c = CMP[which], sm = summarize(comparePoints(s, which), thrX), st = changeStatements(s, which, sm, thrX);
+      const t = wc.getCell(cr, 1); t.value = `Current ${dates[0]} vs ${c.name} ${dates[which === 'prev' ? 1 : 2]}`; t.font = { bold: true, size: 13, color: { argb: 'FF004578' } }; cr += 1;
+      wc.getCell(cr, 1).value = st.headline; wc.mergeCells(cr, 1, cr, 5); wc.getCell(cr, 1).alignment = { wrapText: true }; wc.getRow(cr).height = 32; cr++;
+      st.checks.forEach(k => { const cc = wc.getCell(cr, 1); cc.value = k.text; cc.font = { color: { argb: k.level === 'ok' ? 'FF0B6B33' : k.level === 'high' ? 'FFA1261A' : 'FF8A5300' } }; wc.mergeCells(cr, 1, cr, 5); cc.alignment = { wrapText: true }; wc.getRow(cr).height = 45; cr++; });
+      if (sm.n) {
+        [['Points compared', sm.n], ['Average change (m)', sm.avg], ['Average size of change (m)', sm.avgAbs], ['Maximum difference (m)', sm.max.diff], ['Maximum at', sm.max.loc], ['Largest drop (m)', sm.maxDown ? sm.maxDown.diff : ''], ['Largest drop at', sm.maxDown ? sm.maxDown.loc : ''], ['Largest rise (m)', sm.maxUp ? sm.maxUp.diff : ''], ['Largest rise at', sm.maxUp ? sm.maxUp.loc : ''], ['Report wording', st.report]]
+          .forEach(r => { cellSet(wc, cr, 1, r[0], { align: 'left', bold: true }); cellSet(wc, cr, 2, r[1], { align: 'left' }); wc.mergeCells(cr, 2, cr, 5); cr++; });
+        cr++;
+        ['Reading', 'Current (m)', c.Name + ' (m)', 'Difference (m)', 'Flag'].forEach((hd, i) => cellSet(wc, cr, i + 1, hd, { head: true })); cr++;
+        [...sm.items].sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff)).forEach(it => {
+          const big = Math.abs(it.diff) >= thrX * 2, flag = Math.abs(it.diff) >= thrX;
+          cellSet(wc, cr, 1, it.loc, { align: 'left' }); cellSet(wc, cr, 2, it.cur); cellSet(wc, cr, 3, it.oth);
+          cellSet(wc, cr, 4, it.diff, flag ? { fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: big ? 'FFFBD9D4' : 'FFFFF0CC' } } } : {});
+          cellSet(wc, cr, 5, big ? 'Very large' : flag ? 'Large' : ''); cr++;
+        });
+      }
+      cr += 2;
+    }
+
+    // Embedded data so this workbook can be reopened or imported as previous data
+    const wd = wb.addWorksheet('APP_DATA'); wd.state = 'hidden';
+    const json = JSON.stringify(state);
+    for (let i = 0, r = 1; i < json.length; i += 30000, r++) wd.getCell(r, 1).value = json.slice(i, i + 30000);
+
+    const buf = await wb.xlsx.writeBuffer();
+    busy(false);
+    await saveFile(baseName() + '.xlsx', new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+  } catch (e) { busy(false); toast(e.message || 'The Excel file could not be built.', true); }
+}
+
+render();
+
+</script>
+</body>
+</html>
